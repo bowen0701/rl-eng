@@ -2,10 +2,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import argparse
 import json
+import os
 import re
+from dataclasses import asdict, dataclass
+from datetime import datetime
 
 import numpy as np
+import yaml
+
+from rl_eng.config import BaseConfig
 
 
 NMARKS = 3
@@ -15,6 +22,12 @@ BOARD_SIZE = BOARD_NROWS * BOARD_NCOLS
 CROSS = 1
 CIRCLE = -1
 EMPTY = 0
+
+
+@dataclass
+class TicTacToeConfig(BaseConfig):
+    """Specific configuration for Tic-Tac-Toe."""
+    env: str = "tic_tac_toe"
 
 
 class Environment:
@@ -146,14 +159,14 @@ class Environment:
 class Agent:
     """Agent class for Tic-Tac-Toe game."""
 
-    def __init__(self, player='X', step_size=0.01, epsilon=0.01):
+    def __init__(self, player='X', step_size=None, epsilon=None):
         self.player = player
         if self.player == 'X':
             self.symbol = CROSS
         elif self.player == 'O':
             self.symbol = CIRCLE
         else:
-            raise InputError("Input player should be 'X' or 'O'")
+            raise ValueError("Input player should be 'X' or 'O'")
 
         self.step_size = step_size
         self.epsilon = epsilon
@@ -173,11 +186,11 @@ class Agent:
             if env.winner == self.symbol:
                 # If agent is winner, it gets reward 1.
                 self.V[s] = 1.0
-            elif env.winner == -self.symbol or env.steps_left == 0:
-                # If agent is loser or tied, it gets reward 0.
+            elif env.winner == -self.symbol:
+                # If agent is loser, it gets reward 0.
                 self.V[s] = 0.0
             else:
-                # For other cases, agent get reward 0.5.
+                # For tie or other cases, agent get reward 0.5.
                 self.V[s] = 0.5
 
     def reset_episode(self):
@@ -264,41 +277,26 @@ class Agent:
                 self.V[s_par] += self.step_size * (self.V[s] - self.V[s_par])
             s = s_par
 
-    def save_state_value_table(self):
-        """Save learned state-value table."""
-        if self.symbol == CROSS:
-            json.dump(
-                self.V, 
-                open(f"output/tic_tac_toe_state_value_x_"
-                     f"step_size={self.step_size}_epsilon={self.epsilon}.json", 
-                     'w'
-                )
-            )
-        else:
-            json.dump(
-                self.V, 
-                open(f"output/tic_tac_toe_state_value_o_"
-                     f"step_size={self.step_size}_epsilon={self.epsilon}.json", 
-                     'w'
-                )
-            )
+    def save_state_value_table(self, run_dir):
+        """Save learned state-value table into the specified run directory."""
+        filename = "state_values_x.json" if self.symbol == CROSS else "state_values_o.json"
+        path = os.path.join(run_dir, filename)
+        with open(path, 'w') as f:
+            json.dump(self.V, f)
 
-    def load_state_value_table(self, step_size, epsilon):
-        """Load learned state-value table."""
-        if self.symbol == CROSS:
-            self.V = json.load(
-                open(f"output/tic_tac_toe_state_value_x_"
-                     f"step_size={step_size}_epsilon={epsilon}.json")
-            )
-        else:
-            self.V = json.load(
-                open(f"output/tic_tac_toe_state_value_o_"
-                     f"step_size={step_size}_epsilon={epsilon}.json")
-            )
+    def load_state_value_table(self, run_dir):
+        """Load learned state-value table from the specified run directory."""
+        filename = "state_values_x.json" if self.symbol == CROSS else "state_values_o.json"
+        path = os.path.join(run_dir, filename)
+        with open(path, 'r') as f:
+            self.V = json.load(f)
 
 
-def self_train(epochs=int(1e5), step_size=0.01, epsilon=0.01, print_per_epochs=500):
+def self_train(epochs=int(1e5), step_size=0.01, epsilon=0.01, print_per_epochs=500, seed=None, run_dir=None):
     """Self train an agent by playing games against itself."""
+    if seed is not None:
+        np.random.seed(seed)
+
     agent1 = Agent(player='X', step_size=step_size, epsilon=epsilon)
     agent2 = Agent(player='O', step_size=step_size, epsilon=epsilon)
     agent1.init_state_value_table()
@@ -343,6 +341,10 @@ def self_train(epochs=int(1e5), step_size=0.01, epsilon=0.01, print_per_epochs=5
         else:
             n_ties += 1
 
+            # In a tie, Agent 1 just moved (9th move), Agent 2 needs to back up.
+            agent2.add_state(env.state, is_greedy)
+            agent2.backup_state_value()
+
         # Print board.
         if i % print_per_epochs == 0:
             print('Epoch {}: Agent1 wins {}, Agent2 wins {}, ties {}'
@@ -353,8 +355,9 @@ def self_train(epochs=int(1e5), step_size=0.01, epsilon=0.01, print_per_epochs=5
             env.show_board()
             print('---')
 
-    agent1.save_state_value_table()
-    agent2.save_state_value_table()
+    if run_dir:
+        agent1.save_state_value_table(run_dir)
+        agent2.save_state_value_table(run_dir)
 
 
 class Human:
@@ -392,7 +395,7 @@ class Human:
         return r, c, self.symbol
 
 
-def human_agent_compete(step_size, epsilon):
+def human_agent_compete(run_dir, config):
     """Human compete with agent."""
     # Get human player.
     human_name = input('Please input your name:\n')
@@ -418,7 +421,7 @@ def human_agent_compete(step_size, epsilon):
         player1, player2 = agent, human
         player1_name, player2_name = 'Robot', human_name
 
-    agent.load_state_value_table(step_size, epsilon)
+    agent.load_state_value_table(run_dir)
 
     # Start competition.
     while not env.is_done():
@@ -451,19 +454,83 @@ def human_agent_compete(step_size, epsilon):
 
 
 def main():
-    step_size = 0.1
-    epsilon = 0.01
+    """Main entry point for Tic-Tac-Toe RL.
+    
+    Usage:
+        To train the agent:
+        python3 -m rl_eng.tic_tac_toe train --epochs 100000 --step_size 0.1 --epsilon 0.01 --seed 42
+        
+        To play against the agent:
+        python3 -m rl_eng.tic_tac_toe play --run_id tic_tac_toe_20260411_1830_s42
+    """
+    parser = argparse.ArgumentParser(description="Tic-Tac-Toe Reinforcement Learning")
+    subparsers = parser.add_subparsers(dest="cmd", help="Command to run")
 
-    while True:
-        cmd = input('Train robot (T) or play game (P)? ')
-        if cmd in ['T', 'P']:
-            break
+    # Train command
+    train_parser = subparsers.add_parser("train", help="Train the RL agent")
+    train_parser.add_argument("--epochs", type=int, default=100000, help="Number of training epochs")
+    train_parser.add_argument("--step_size", type=float, default=0.1, help="Learning step size")
+    train_parser.add_argument("--epsilon", type=float, default=0.01, help="Exploration rate")
+    train_parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility")
 
-    if cmd == 'T':
-        self_train(epochs=int(1e5), step_size=step_size, epsilon=epsilon, 
-                   print_per_epochs=500)
-    elif cmd == 'P':
-        human_agent_compete(step_size=step_size, epsilon=epsilon)
+    # Play command
+    play_parser = subparsers.add_parser("play", help="Play against the trained RL agent")
+    play_parser.add_argument("--run_id", type=str, required=True, help="Run ID to load the agent from")
+
+    args = parser.parse_args()
+
+    # Configuration lifecycle: 
+    # 1. Initialize default config
+    config = TicTacToeConfig()
+
+    # 2. Apply overrides from argparse
+    if args.cmd == "train":
+        config.seed = args.seed
+        config.training.epochs = args.epochs
+        config.training.step_size = args.step_size
+        config.training.epsilon = args.epsilon
+
+        # 3. Generate run_id and directory
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+        run_id = f"{config.env}_{timestamp}_s{config.seed}"
+        run_dir = os.path.join("runs", run_id)
+        os.makedirs(run_dir, exist_ok=True)
+
+        # 4. Freeze config and write to YAML
+        with open(os.path.join(run_dir, "config.yaml"), 'w') as f:
+            yaml.dump(asdict(config), f)
+
+        print(f"Starting training run: {run_id}")
+        self_train(
+            epochs=config.training.epochs,
+            step_size=config.training.step_size,
+            epsilon=config.training.epsilon,
+            print_per_epochs=500,
+            seed=config.seed,
+            run_dir=run_dir
+        )
+    elif args.cmd == "play":
+        run_dir = os.path.join("runs", args.run_id)
+        if not os.path.exists(run_dir):
+            print(f"Error: Run directory {run_dir} does not exist.")
+            return
+
+        # Load config from the run directory
+        config_path = os.path.join(run_dir, "config.yaml")
+        if os.path.exists(config_path):
+            with open(config_path, 'r') as f:
+                raw_config = yaml.safe_load(f)
+                config.seed = raw_config.get("seed", config.seed)
+                if "training" in raw_config:
+                    config.training.epochs = raw_config["training"].get("epochs", config.training.epochs)
+                    config.training.step_size = raw_config["training"].get("step_size", config.training.step_size)
+                    config.training.epsilon = raw_config["training"].get("epsilon", config.training.epsilon)
+
+        # Force epsilon to 0.0 for the competition
+        config.training.epsilon = 0.0
+        human_agent_compete(run_dir=run_dir, config=config)
+    else:
+        parser.print_help()
 
 
 if __name__ == '__main__':
