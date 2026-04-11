@@ -9,6 +9,9 @@ class TrainingConfig:
     step_size: float = 0.1
     epsilon: float = 0.01
     gamma: float = 1.0  # Discount factor
+    win_reward: float = 1.0
+    loss_reward: float = 0.0
+    tie_reward: float = 0.0
 
 
 @dataclass

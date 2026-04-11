@@ -159,7 +159,7 @@ class Environment:
 class Agent:
     """Agent class for Tic-Tac-Toe game."""
 
-    def __init__(self, player='X', step_size=None, epsilon=None):
+    def __init__(self, player='X', step_size=None, epsilon=None, win_reward=1.0, loss_reward=0.0, tie_reward=0.5):
         self.player = player
         if self.player == 'X':
             self.symbol = CROSS
@@ -170,6 +170,9 @@ class Agent:
 
         self.step_size = step_size
         self.epsilon = epsilon
+        self.win_reward = win_reward
+        self.loss_reward = loss_reward
+        self.tie_reward = tie_reward
 
         # Create a state-value table V:state->value.
         self.V = dict()
@@ -184,14 +187,14 @@ class Agent:
 
         for s, env in all_state_env_d.items():
             if env.winner == self.symbol:
-                # If agent is winner, it gets reward 1.
-                self.V[s] = 1.0
+                # If agent is winner, it gets win_reward.
+                self.V[s] = self.win_reward
             elif env.winner == -self.symbol:
-                # If agent is loser, it gets reward 0.
-                self.V[s] = 0.0
+                # If agent is loser, it gets loss_reward.
+                self.V[s] = self.loss_reward
             else:
-                # For tie or other cases, agent get reward 0.5.
-                self.V[s] = 0.5
+                # For tie or other cases, agent get tie_reward.
+                self.V[s] = self.tie_reward
 
     def reset_episode(self):
         """Init episode."""
@@ -292,13 +295,16 @@ class Agent:
             self.V = json.load(f)
 
 
-def self_train(epochs=int(1e5), step_size=0.01, epsilon=0.01, print_per_epochs=500, seed=None, run_dir=None):
+def self_train(epochs=int(1e5), step_size=0.01, epsilon=0.01, print_per_epochs=500, seed=None, run_dir=None, 
+               win_reward=1.0, loss_reward=0.0, tie_reward=0.5):
     """Self train an agent by playing games against itself."""
     if seed is not None:
         np.random.seed(seed)
 
-    agent1 = Agent(player='X', step_size=step_size, epsilon=epsilon)
-    agent2 = Agent(player='O', step_size=step_size, epsilon=epsilon)
+    agent1 = Agent(player='X', step_size=step_size, epsilon=epsilon, 
+                   win_reward=win_reward, loss_reward=loss_reward, tie_reward=tie_reward)
+    agent2 = Agent(player='O', step_size=step_size, epsilon=epsilon,
+                   win_reward=win_reward, loss_reward=loss_reward, tie_reward=tie_reward)
     agent1.init_state_value_table()
     agent2.init_state_value_table()
 
@@ -472,6 +478,9 @@ def main():
     train_parser.add_argument("--step_size", type=float, default=0.1, help="Learning step size")
     train_parser.add_argument("--epsilon", type=float, default=0.01, help="Exploration rate")
     train_parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility")
+    train_parser.add_argument("--win_reward", type=float, default=1.0, help="Reward for winning")
+    train_parser.add_argument("--loss_reward", type=float, default=0.0, help="Reward for losing")
+    train_parser.add_argument("--tie_reward", type=float, default=0.5, help="Reward for a tie")
 
     # Play command
     play_parser = subparsers.add_parser("play", help="Play against the trained RL agent")
@@ -489,6 +498,9 @@ def main():
         config.training.epochs = args.epochs
         config.training.step_size = args.step_size
         config.training.epsilon = args.epsilon
+        config.training.win_reward = args.win_reward
+        config.training.loss_reward = args.loss_reward
+        config.training.tie_reward = args.tie_reward
 
         # 3. Generate run_id and directory
         timestamp = datetime.now().strftime("%Y%m%d_%H%M")
@@ -507,7 +519,10 @@ def main():
             epsilon=config.training.epsilon,
             print_per_epochs=500,
             seed=config.seed,
-            run_dir=run_dir
+            run_dir=run_dir,
+            win_reward=config.training.win_reward,
+            loss_reward=config.training.loss_reward,
+            tie_reward=config.training.tie_reward
         )
     elif args.cmd == "play":
         run_dir = os.path.join("runs", args.run_id)
@@ -525,6 +540,9 @@ def main():
                     config.training.epochs = raw_config["training"].get("epochs", config.training.epochs)
                     config.training.step_size = raw_config["training"].get("step_size", config.training.step_size)
                     config.training.epsilon = raw_config["training"].get("epsilon", config.training.epsilon)
+                    config.training.win_reward = raw_config["training"].get("win_reward", config.training.win_reward)
+                    config.training.loss_reward = raw_config["training"].get("loss_reward", config.training.loss_reward)
+                    config.training.tie_reward = raw_config["training"].get("tie_reward", config.training.tie_reward)
 
         # Force epsilon to 0.0 for the competition
         config.training.epsilon = 0.0
