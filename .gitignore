@@ -10,7 +10,7 @@ build/
 
 # ML artifacts
 models/
-outputs/
+runs/
 
 # Venv (common names)
 .venv/
