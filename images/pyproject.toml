@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rl-eng"
+version = "0.1.0"
+description = "Reinforcement Learning Research and Engineering"
+requires-python = ">=3.9"
+authors = [{name = "Bowen Lee", email = "bowen0701@gmail.com"}]
+dependencies = [
+    "torch>=2.0.0",
+    "gymnasium",
+    "numpy>=1.21.0",
+]
+
+[tool.setuptools]
+# This tells setuptools to find the package 'rl_eng' in the root
+packages = ["rl_eng"]
+
+[tool.setuptools.packages.find]
+include = ["rl_eng*"]  # This ensures subpackages like rl_eng.infra are found
+
+[tool.ruff]
+# SB3 uses a longer line length (127) which is great for complex RL logic
+line-length = 127
+target-version = "py39"
+
+[tool.ruff.lint]
+# Select common plugins: Error, Flake8, Isort, Warning
+select = ["E", "F", "I", "W"]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double" # Standardizes on double quotes like Black
+
+[tool.mypy]
+python_version = "3.9"
+ignore_missing_imports = true
+follow_imports = "silent"
+
+# --- Lenient Settings for Fast Prototyping ---
+disallow_untyped_defs = false    # Don't force type hints on all functions yet
+check_untyped_defs = true        # Still check the body of functions for basic errors
+warn_return_any = false          # Don't complain if a function returns 'Any'
+strict_optional = true           # Keep basic None-safety (prevents many RL bugs)

@@ -1,0 +1,14 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.3.0
+    hooks:
+      - id: ruff
+        args: [ --fix ] # Automatically fix lint errors like unused imports
+      - id: ruff-format # Replaces Black for formatting
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.9.0
+    hooks:
+      - id: mypy
+        # Add stubs for RL libraries if needed
+        additional_dependencies: [types-requests, types-setuptools]
