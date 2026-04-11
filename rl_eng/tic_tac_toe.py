@@ -510,7 +510,7 @@ def main():
 
         # 4. Freeze config and write to YAML
         with open(os.path.join(run_dir, "config.yaml"), 'w') as f:
-            yaml.dump(asdict(config), f)
+            yaml.dump(asdict(config), f, sort_keys=False)
 
         print(f"Starting training run: {run_id}")
         self_train(
