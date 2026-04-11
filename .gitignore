@@ -1,4 +1,40 @@
-.ipynb_checkpoints*
-*/__pycache__
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Venv (common names)
+.venv/
+venv/
+env/
+.env/
+
+# uv
+.uv/
+
+# Tools
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
 .DS_Store
-todo/*
+Thumbs.db
+
+# Secrets / local config
+.env
+*.local
+secrets.*
