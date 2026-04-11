@@ -469,28 +469,28 @@ def main():
         To play against the agent:
         python3 -m rl_eng.tic_tac_toe play --run_id tic_tac_toe_20260411_1830_s42
     """
+    # Configuration lifecycle: 
+    # 1. Initialize default config object to use for argparse defaults
+    config = TicTacToeConfig()
+
     parser = argparse.ArgumentParser(description="Tic-Tac-Toe Reinforcement Learning")
     subparsers = parser.add_subparsers(dest="cmd", help="Command to run")
 
     # Train command
     train_parser = subparsers.add_parser("train", help="Train the RL agent")
-    train_parser.add_argument("--epochs", type=int, default=100000, help="Number of training epochs")
-    train_parser.add_argument("--step_size", type=float, default=0.1, help="Learning step size")
-    train_parser.add_argument("--epsilon", type=float, default=0.01, help="Exploration rate")
-    train_parser.add_argument("--seed", type=int, default=42, help="Random seed for reproducibility")
-    train_parser.add_argument("--win_reward", type=float, default=1.0, help="Reward for winning")
-    train_parser.add_argument("--loss_reward", type=float, default=0.0, help="Reward for losing")
-    train_parser.add_argument("--tie_reward", type=float, default=0.5, help="Reward for a tie")
+    train_parser.add_argument("--epochs", type=int, default=config.training.epochs, help="Number of training epochs")
+    train_parser.add_argument("--step_size", type=float, default=config.training.step_size, help="Learning step size")
+    train_parser.add_argument("--epsilon", type=float, default=config.training.epsilon, help="Exploration rate")
+    train_parser.add_argument("--seed", type=int, default=config.seed, help="Random seed for reproducibility")
+    train_parser.add_argument("--win_reward", type=float, default=config.training.win_reward, help="Reward for winning")
+    train_parser.add_argument("--loss_reward", type=float, default=config.training.loss_reward, help="Reward for losing")
+    train_parser.add_argument("--tie_reward", type=float, default=config.training.tie_reward, help="Reward for a tie")
 
     # Play command
     play_parser = subparsers.add_parser("play", help="Play against the trained RL agent")
     play_parser.add_argument("--run_id", type=str, required=True, help="Run ID to load the agent from")
 
     args = parser.parse_args()
-
-    # Configuration lifecycle: 
-    # 1. Initialize default config
-    config = TicTacToeConfig()
 
     # 2. Apply overrides from argparse
     if args.cmd == "train":
