@@ -22,17 +22,22 @@ packages = ["rl_eng"]
 include = ["rl_eng*"]  # This ensures subpackages like rl_eng.infra are found
 
 [tool.ruff]
-# SB3 uses a longer line length (127) which is great for complex RL logic
+# Uses a longer line length (127) which is great for complex RL logic
 line-length = 127
 target-version = "py39"
 
 [tool.ruff.lint]
-# Select common plugins: Error, Flake8, Isort, Warning
-select = ["E", "F", "I", "W"]
-ignore = []
+# Select specific rules: 
+# E/F (standard errors), I (isort/imports), D (docstrings)
+select = ["E", "F", "I", "D"]
+
+[tool.ruff.lint.pydocstyle]
+# This specifically enforces Google-style docstrings
+convention = "google"
 
 [tool.ruff.format]
-quote-style = "double" # Standardizes on double quotes like Black
+# Google style uses double quotes (standard for Ruff)
+quote-style = "double"
 
 [tool.mypy]
 python_version = "3.9"
