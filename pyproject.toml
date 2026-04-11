@@ -12,14 +12,13 @@ dependencies = [
     "torch>=2.0.0",
     "gymnasium",
     "numpy>=1.21.0",
+    "PyYAML",
 ]
 
 [tool.setuptools]
-# This tells setuptools to find the package 'rl_eng' in the root
-packages = ["rl_eng"]
-
+# This tells setuptools to automatically find packages starting with 'rl_eng'
 [tool.setuptools.packages.find]
-include = ["rl_eng*"]  # This ensures subpackages like rl_eng.infra are found
+include = ["rl_eng*"]
 
 [tool.ruff]
 # Uses a longer line length (127) which is great for complex RL logic
