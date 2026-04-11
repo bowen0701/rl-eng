@@ -1,3 +1,3 @@
-# Reinforcement Learning
+# Reinforcement Learning Engineering
 
-This repo is to collect my Python implementation of reinforcement learning algorithms.
+`rl-eng` is reinforcement learning algorithms and infra platform.
