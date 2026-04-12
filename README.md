@@ -24,7 +24,7 @@ pip3 install -e .
 ```
 
 ### 1. Training & Testing
-Train a TD(0) agent for Tic-Tac-Toe. This will create a new directory in `runs/`.
+For example: Train a TD(0) agent for Tic-Tac-Toe. This will create a new directory in `runs/`.
 ```bash
 python3 -m rl_eng.tic_tac_toe train --epochs 100000 --epsilon 0.75
 ```
