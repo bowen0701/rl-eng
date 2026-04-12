@@ -106,7 +106,10 @@ class TicTacToePygame:
                         if event.pos[1] < WIDTH and self.env.board[row][col] == EMPTY:
                             symbol = CROSS if self.human_player == 'X' else CIRCLE
                             self.env = self.env.step(row, col, symbol)
-                            self.turn = 'agent'
+                            if self.env.is_done():
+                                self.game_over = True
+                            else:
+                                self.turn = 'agent'
 
             # Agent Turn Logic (outside event loop for auto-play)
             if self.game_started and not self.game_over and self.turn == 'agent':
