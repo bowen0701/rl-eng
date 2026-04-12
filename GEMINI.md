@@ -53,6 +53,9 @@ Run the core logic directly via the module interface:
 - **Linting**: Enforced via **Ruff** with a line length of 127.
 - **Types**: Use type hints where possible; `mypy` is configured for basic type safety.
 
+### Naming Conventions
+- **Explicit Naming**: Prefer explicit names for files, variables, and functions unless a convention is very obvious or better clarified instruction (e.g., use `test_agent_tic_tac_toe_tabular.py` instead of `test_agent.py`).
+
 ### RL Mechanics
 - **State Representation**: Tic-Tac-Toe states are represented as comma-separated strings of board values (1 for X, -1 for O, 0 for empty).
 - **Value Function**: The agent uses a state-value table initialized via DFS of all reachable states.
