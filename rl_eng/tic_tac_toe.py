@@ -13,7 +13,7 @@ import yaml
 
 from rl_eng.config import BaseConfig
 from rl_eng.envs.tic_tac_toe import CROSS, CIRCLE, EMPTY, NMARKS, BOARD_NROWS, BOARD_NCOLS, BOARD_SIZE, Environment
-from rl_eng.agents.tic_tac_toe_tabular import Agent, self_train
+from rl_eng.agents.tic_tac_toe_td import Agent, self_train
 
 @dataclass
 class TicTacToeConfig(BaseConfig):

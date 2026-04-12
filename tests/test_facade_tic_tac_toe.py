@@ -1,3 +1,8 @@
+"""
+Usage:
+    # From project root:
+    python3 -m pytest tests/test_facade_tic_tac_toe.py
+"""
 from rl_eng import tic_tac_toe
 
 def test_facade_constants():

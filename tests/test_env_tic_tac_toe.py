@@ -1,3 +1,8 @@
+"""
+Usage:
+    # From project root:
+    python3 -m pytest tests/test_env_tic_tac_toe.py
+"""
 from rl_eng.envs.tic_tac_toe import Environment, CROSS, CIRCLE, EMPTY
 
 def test_initial_state():
