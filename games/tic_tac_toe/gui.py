@@ -1,7 +1,8 @@
 import pygame
 import sys
 import os
-from rl_eng.tic_tac_toe import Environment, Agent, CROSS, CIRCLE, EMPTY
+from rl_eng.envs.tic_tac_toe import Environment, CROSS, CIRCLE, EMPTY
+from rl_eng.agents.tic_tac_toe_tabular import Agent
 
 # Constants
 WIDTH, HEIGHT = 400, 500 # Extra height for buttons/status
@@ -134,8 +135,8 @@ class TicTacToePygame:
 
 if __name__ == "__main__":
     """Usage:
-        # To play against the agent:
-        python3 -m games.tic_tac_toe.gui --run_id <run_id>
+        # To play against the agent (directly as a script):
+        python3 games/tic_tac_toe/gui.py --run_id <run_id>
     """
     import argparse
     parser = argparse.ArgumentParser()

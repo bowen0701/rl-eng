@@ -1,5 +1,5 @@
 """
-rl_eng/tic_tac_toe_launcher.py
+games/tic_tac_toe/launcher.py
 ===============================
 Entry point for the macOS packaged Tic-Tac-Toe application.
 
@@ -9,26 +9,26 @@ relative paths computed at development time -- every path to a bundled
 resource must go through `resource_path()`.
 
 Usage (development, run from project root):
-    python rl_eng/tic_tac_toe_launcher.py --run_id <run_id>
+    python3 games/tic_tac_toe/launcher.py --run_id <run_id>
 
 Usage (after PyInstaller packaging):
     # The built app embeds the run directory you specified at build time.
     # End-users just double-click TicTacToe.app; no CLI needed.
     # If you want to expose run_id to end-users via a launcher script, see
-    # rl_eng/tic_tac_toe_build_app.sh for how to wrap the PyInstaller call.
+    # games/tic_tac_toe/build_app.sh for how to wrap the PyInstaller call.
 
 Packaging (run from project root):
     # Step 1: Install dependencies (once).
     pip install pyinstaller pygame
 
     # Step 2: Make the build script executable (once).
-    chmod +x rl_eng/tic_tac_toe_build_app.sh
+    chmod +x games/tic_tac_toe/build_app.sh
 
     # Step 3: Build the .app bundle.  Replace <run_id> with your training
     #         run identifier, e.g. 20240101_120000.
-    ./rl_eng/tic_tac_toe_build_app.sh --run_id <run_id>
+    ./games/tic_tac_toe/build_app.sh --run_id <run_id>
 
-    # Output: dist/TicTacToe.zip
+    # Output: games/tic_tac_toe/dist/TicTacToe.zip
     #   - Unzip and double-click TicTacToe.app to play.
     #   - First launch: right-click -> Open to bypass macOS Gatekeeper.
     #   - Subsequent launches: double-click as normal.
