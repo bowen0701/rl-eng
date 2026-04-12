@@ -130,6 +130,10 @@ class TicTacToePygame:
             pygame.display.update()
 
 if __name__ == "__main__":
+    """Use:
+        # To play against the agent:
+        python3 -m rl_eng.tic_tac_toe_pygame --run_id <run_id>
+    """
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--run_id", type=str, required=True)

@@ -463,11 +463,11 @@ def main():
     """Main entry point for Tic-Tac-Toe RL.
     
     Usage:
-        To train the agent:
+        # To train the agent:
         python3 -m rl_eng.tic_tac_toe train --epochs 100000 --step_size 0.1 --epsilon 0.01 --seed 42
         
-        To play against the agent:
-        python3 -m rl_eng.tic_tac_toe play --run_id tic_tac_toe_20260411_1830_s42
+        # To play against the agent:
+        python3 -m rl_eng.tic_tac_toe play --run_id <run_id>
     """
     # Configuration lifecycle: 
     # 1. Initialize default config object to use for argparse defaults
