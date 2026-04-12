@@ -464,7 +464,7 @@ def main():
     
     Usage:
         # To train the agent:
-        python3 -m rl_eng.tic_tac_toe train --epochs 100000 --step_size 0.1 --epsilon 0.01 --seed 42
+        python3 -m rl_eng.tic_tac_toe train --epochs 100000 --step_size 0.75 --epsilon 0.75 --seed 42
         
         # To play against the agent:
         python3 -m rl_eng.tic_tac_toe play --run_id <run_id>
