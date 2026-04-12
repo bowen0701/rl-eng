@@ -5,12 +5,14 @@
 ---
 
 ## 🏗 Project Architecture
-The repository is structured to separate core algorithm logic from interactive interfaces and distribution tools:
+The repository is structured to separate core algorithm logic from interactive interfaces and infrastructure tools:
 
-*   **`rl_eng/`**: Core library containing environment abstractions and RL agent implementations (TD-Learning, MAB).
+*   **`rl_eng/`**: Core library containing environment abstractions (`envs/`) and agent implementations (`agents/`).
 *   **`games/`**: Interactive implementations using the core library. Features a Pygame-based Tic-Tac-Toe GUI.
-*   **`runs/`**: Experimental tracking. Contains timestamped directories with state-value tables and YAML configurations. These are typically ignored by Git.
-*   **`models/stable/`**: The **Model Zoo**. This directory is for "graduated" model artifacts that have been verified and are ready for distribution.
+*   **`runs/`**: Local experimental tracking. Contains timestamped directories with state-value tables and YAML configurations. **Note: This directory is ignored by Git to prevent committing transient training artifacts.**
+*   **`models/stable/`**: The **Model Zoo**. Verified artifacts ready for distribution.
+*   **`scripts/`**: Automation tools for model graduation and infrastructure management.
+*   **`tests/`**: Automated verification for core infrastructure and RL logic.
 
 ## 🚀 Quick Start
 
@@ -21,10 +23,14 @@ git clone https://github.com/bowenlee/rl-eng.git
 pip3 install -e .
 ```
 
-### 1. Training
+### 1. Training & Testing
 Train a TD(0) agent for Tic-Tac-Toe. This will create a new directory in `runs/`.
 ```bash
 python3 -m rl_eng.tic_tac_toe train --epochs 100000 --epsilon 0.75
+```
+Run the automated test suite:
+```bash
+python3 -m pytest tests
 ```
 
 ### 2. Playing (Experimental)
@@ -40,17 +46,16 @@ python3 scripts/promote_run_to_stable.py --run_id <your_run_id>
 ```
 Artifacts will be stored in `models/stable/<model_name>_vK/`.
 
-
 ## 📦 Distribution
 Package your stable models into a standalone macOS `.app` bundle:
 ```bash
-# Point the build script to your stable model path or latest run
-./games/tic_tac_toe/build_app.sh --run_id tic_tac_toe_20260412_0014_s42
+./games/tic_tac_toe/build_app.sh --run_id <run_id>
 ```
 
 ## 🛠 Engineering Standards
-*   **Linting/Formatting**: Managed via `ruff` (Google style docstrings).
+*   **Linting/Formatting**: Managed via `ruff`.
 *   **Configuration**: Type-safe experiment configs using `dataclasses`.
+*   **Naming**: Prefer explicit, clarified names (e.g., `tests/test_agent_tic_tac_toe_td.py` over `test_agent.py`).
 *   **Packaging**: PyInstaller integration for standalone GUI deployment.
 
 ## 🗺 Roadmap
