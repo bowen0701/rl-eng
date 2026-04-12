@@ -61,6 +61,7 @@ if [[ ! -d "${RUN_DIR}" ]]; then
     echo "[build_app] Error: run directory not found: ${RUN_DIR}" >&2
     exit 1
 fi
+
 # ---------------------------------------------------------------------------
 # 3. Ensure PyInstaller is installed.
 # ---------------------------------------------------------------------------
@@ -105,7 +106,6 @@ python3 -m PyInstaller \
     "${GAME_DIR}/launcher.py"
 
 echo "[build_app] PyInstaller finished."
-
 
 # ---------------------------------------------------------------------------
 # 6. Inject wrapper
