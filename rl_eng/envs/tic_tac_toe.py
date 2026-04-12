@@ -1,41 +1,45 @@
+from __future__ import annotations
+from typing import List, Tuple, Dict, Optional
 import numpy as np
 
-NMARKS = 3
-BOARD_NROWS = BOARD_NCOLS = 3
-BOARD_SIZE = BOARD_NROWS * BOARD_NCOLS
+NMARKS: int = 3
+BOARD_NROWS: int = 3
+BOARD_NCOLS: int = 3
+BOARD_SIZE: int = BOARD_NROWS * BOARD_NCOLS
 
-CROSS = 1
-CIRCLE = -1
-EMPTY = 0
+CROSS: int = 1
+CIRCLE: int = -1
+EMPTY: int = 0
 
 class Environment:
     """Environment class for Tic-Tac Toe."""
 
-    def __init__(self):
-        self.steps_left = BOARD_SIZE
-        self.board = (np.array([EMPTY] * BOARD_SIZE)
-                        .reshape((BOARD_NROWS, BOARD_NCOLS)))
-        self.state = self._hash(self.board)
-        self.winner = EMPTY
+    def __init__(self) -> None:
+        self.steps_left: int = BOARD_SIZE
+        self.board: np.ndarray = (np.array([EMPTY] * BOARD_SIZE)
+                                    .reshape((BOARD_NROWS, BOARD_NCOLS)))
+        self.state: str = self._hash(self.board)
+        self.winner: int = EMPTY
 
     @staticmethod
-    def _hash(board):
+    def _hash(board: np.ndarray) -> str:
+        """Computes a string hash of the board state."""
         return ','.join([str(x) for x in list(board.reshape(BOARD_SIZE))])
 
-    def get_positions(self):
+    def get_positions(self) -> List[Tuple[int, int]]:
         """Get possible action positions given current board."""
-        positions = []
+        positions: List[Tuple[int, int]] = []
         for r in range(BOARD_NROWS):
             for c in range(BOARD_NCOLS):
                 if self.board[r][c] == EMPTY:
                     positions.append((r, c))
         return positions
 
-    def is_done(self):
-        """Check the game is done."""
+    def is_done(self) -> bool:
+        """Check if the game is done."""
         return self.steps_left == 0
 
-    def _copy(self):
+    def _copy(self) -> Environment:
         """Copy to a new Environment instance."""
         env_copy = Environment()
         env_copy.steps_left = self.steps_left
@@ -44,7 +48,7 @@ class Environment:
         env_copy.winner = self.winner
         return env_copy
 
-    def _judge(self):
+    def _judge(self) -> Optional[Environment]:
         """Judge winner based on the current board."""
         # Check rows.
         for r in range(BOARD_NROWS):
@@ -73,14 +77,15 @@ class Environment:
                 diag1.append(self.board[i][i])
                 diag2.append(self.board[i][BOARD_NROWS - i - 1])
 
-            diag1, diag2 = np.array(diag1), np.array(diag2)
-            if (np.sum(diag1) == symbol * NMARKS or 
-                np.sum(diag2) == symbol * NMARKS):
+            diag1_arr, diag2_arr = np.array(diag1), np.array(diag2)
+            if (np.sum(diag1_arr) == symbol * NMARKS or 
+                np.sum(diag2_arr) == symbol * NMARKS):
                 self.winner = symbol
                 self.steps_left = 0
                 return self
+        return None
 
-    def step(self, r, c, symbol):
+    def step(self, r: int, c: int, symbol: int) -> Environment:
         """Take a step with symbol."""
         env_next = self._copy()
         env_next.board[r][c] = symbol
@@ -89,25 +94,28 @@ class Environment:
         env_next._judge()
         return env_next
 
-    def show_board(self):
+    def show_board(self) -> None:
         """Show board."""
-        board = self.board.tolist()
+        board_list = self.board.tolist()
+        printable_board: List[List[str]] = []
         for r in range(BOARD_NROWS):
+            row: List[str] = []
             for c in range(BOARD_NCOLS):
-                if board[r][c] == CROSS:
-                    board[r][c] = 'X'
-                elif board[r][c] == CIRCLE:
-                    board[r][c] = 'O'
+                if board_list[r][c] == CROSS:
+                    row.append('X')
+                elif board_list[r][c] == CIRCLE:
+                    row.append('O')
                 else:
-                    board[r][c] = ' '
+                    row.append(' ')
+            printable_board.append(row)
 
         print('Board: is_done={}, steps_left={}, winner={}'
               .format(self.is_done(), self.steps_left, self.winner))
         for r in range(BOARD_NROWS):
-            print(board[r])
+            print(printable_board[r])
 
     @staticmethod
-    def _dfs_states(cur_symbol, env, all_state_env_d):
+    def _dfs_states(cur_symbol: int, env: Environment, all_state_env_d: Dict[str, Environment]) -> None:
         """DFS for next state by recursion."""
         for r in range(BOARD_NROWS):
             for c in range(BOARD_NCOLS):
@@ -121,14 +129,14 @@ class Environment:
                             Environment._dfs_states(-cur_symbol, env_next, all_state_env_d)
 
     @classmethod
-    def get_all_states(cls):
+    def get_all_states(cls) -> Dict[str, Environment]:
         """Get all states from the init state."""
         # The player who plays first always uses 'X'.
         cur_symbol = CROSS
 
         # Apply DFS to collect all states.
         env = Environment()
-        all_state_env_d = dict()
+        all_state_env_d: Dict[str, Environment] = dict()
         all_state_env_d[env.state] = env
         cls._dfs_states(cur_symbol, env, all_state_env_d)
         return all_state_env_d

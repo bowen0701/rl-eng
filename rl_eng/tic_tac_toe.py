@@ -7,6 +7,7 @@ import os
 import re
 from dataclasses import asdict, dataclass
 from datetime import datetime
+from typing import Tuple
 
 import numpy as np
 import yaml
@@ -24,14 +25,14 @@ class TicTacToeConfig(BaseConfig):
 class Human:
     """Human class for Tic-Tac-Toe game."""
 
-    def __init__(self, player='X'):
-        self.player = player
+    def __init__(self, player: str = 'X') -> None:
+        self.player: str = player
         if self.player == 'X':
-            self.symbol = CROSS
+            self.symbol: int = CROSS
         elif self.player == 'O':
-            self.symbol = CIRCLE
+            self.symbol: int = CIRCLE
 
-    def select_position(self, env):
+    def select_position(self, env: Environment) -> Tuple[int, int, int]:
         """Select a position given current state."""
         # Get human input position.
         input_position_re = re.compile('^[0-2],[0-2]$')
@@ -56,7 +57,7 @@ class Human:
         return r, c, self.symbol
 
 
-def human_agent_compete(run_dir, config):
+def human_agent_compete(run_dir: str, config: TicTacToeConfig) -> None:
     """Human compete with agent."""
     # Get human player.
     human_name = input('Please input your name:\n')
