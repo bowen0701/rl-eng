@@ -9,7 +9,7 @@ dist/
 build/
 
 # ML artifacts
-models/
+# models/
 runs/
 
 # Venv (common names)

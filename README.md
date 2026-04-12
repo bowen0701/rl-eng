@@ -34,11 +34,12 @@ python3 games/tic_tac_toe/launcher.py --run_id <your_run_id>
 ```
 
 ### 3. Graduating to Stable
-Once a model is performing perfectly, move it to the Model Zoo:
+Once a model is performing perfectly, graduate it to the **Model Zoo**. This automates versioning and metadata generation:
 ```bash
-mkdir -p models/stable/tic_tac_toe_v1
-cp runs/<run_id>/* models/stable/tic_tac_toe_v1/
+python3 scripts/promote_run_to_stable.py --run_id <your_run_id>
 ```
+Artifacts will be stored in `models/stable/<model_name>_vK/`.
+
 
 ## 📦 Distribution
 Package your stable models into a standalone macOS `.app` bundle:
