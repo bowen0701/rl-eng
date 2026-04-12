@@ -18,7 +18,7 @@ The repository is structured to separate core algorithm logic from interactive i
 ```bash
 # Clone and install dependencies
 git clone https://github.com/bowenlee/rl-eng.git
-pip install -e .
+pip3 install -e .
 ```
 
 ### 1. Training
