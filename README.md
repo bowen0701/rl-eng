@@ -9,8 +9,8 @@ The repository is structured to separate core algorithm logic from interactive i
 
 *   **`rl_eng/`**: Core library containing environment abstractions (`envs/`) and agent implementations (`agents/`).
 *   **`games/`**: Interactive implementations using the core library. Features a Pygame-based Tic-Tac-Toe GUI.
-*   **`runs/`**: Local experimental tracking. Contains timestamped directories with state-value tables and YAML configurations. **Note: This directory is ignored by Git to prevent committing transient training artifacts.**
-*   **`models/stable/`**: The **Model Zoo**. Verified artifacts ready for distribution.
+*   **`runs/`**: Local experimental tracking. Contains timestamped directories with state-value tables and YAML configurations. Note: This directory is ignored by Git to prevent committing transient training artifacts.
+*   **`models/stable/`**: The Model Zoo. Verified artifacts ready for distribution.
 *   **`scripts/`**: Automation tools for model graduation and infrastructure management.
 *   **`tests/`**: Automated verification for core infrastructure and RL logic.
 
@@ -40,7 +40,7 @@ python3 games/tic_tac_toe/launcher.py --run_id <your_run_id>
 ```
 
 ### 3. Graduating to Stable
-Once a model is performing perfectly, graduate it to the **Model Zoo**. This automates versioning and metadata generation:
+Once a model is performing perfectly, graduate it to the Model Zoo. This automates versioning and metadata generation:
 ```bash
 python3 scripts/promote_run_to_stable.py --run_id <your_run_id>
 ```
