@@ -1,6 +1,6 @@
 # RL-Eng: Reinforcement Learning Research & Engineering
 
-`rl-eng` is a modular framework designed to bridge the gap between RL research prototyping and production-ready engineering. It provides extensible abstractions for environments, agents, and deployment-ready game interfaces.
+`rl-eng` is a modular framework designed to bridge the gap between RL research prototyping and production-ready engineering. The goal is to provide minimum, extensible abstractions for environments, agents, and deployment-ready game interfaces. This repo is in its early development stage so stay tuned.
 
 ---
 
