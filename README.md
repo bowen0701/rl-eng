@@ -5,14 +5,46 @@
 ---
 
 ## 🏗 Project Architecture
-The repository is structured to separate core algorithm logic from interactive interfaces and infrastructure tools:
+The repository is evolving toward a clearer RL systems layout where rollout owns execution, data owns trajectories, and scripts stay thin:
 
-*   **`rl_eng/`**: Core library containing environment abstractions (`envs/`) and agent implementations (`agents/`).
-*   **`games/`**: Interactive implementations using the core library. Features a Pygame-based Tic-Tac-Toe GUI.
-*   **`runs/`**: Local experimental tracking. Contains timestamped directories with state-value tables and YAML configurations. Note: This directory is ignored by Git to prevent committing transient training artifacts.
-*   **`models/stable/`**: The Model Zoo. Verified artifacts ready for distribution.
-*   **`scripts/`**: Automation tools for model graduation and infrastructure management.
-*   **`tests/`**: Automated verification for core infrastructure and RL logic.
+```text
+rl-eng/
+├── rl_eng/                     # ⭐ core Python package (system)
+│   ├── rollout/                # sampling + execution engine (heart)
+│   ├── learners/               # PPO / DPO / diffusion optimizers
+│   ├── models/                 # neural nets (pure functions)
+│   ├── envs/                   # interaction backends (gym / text / sim)
+│   ├── data/                   # trajectories / buffers / datasets
+│   ├── infra/                  # distributed, logging, config, checkpoint
+│   └── interfaces/             # contracts between subsystems
+├── scripts/                    # ⭐ entrypoints (thin orchestration only)
+├── experiments/                # configs (YAML / Hydra style)
+├── tests/
+├── pyproject.toml
+└── README.md
+```
+
+### Mental Model
+```text
+                ┌──────────────┐
+                │   scripts    │
+                └──────┬───────┘
+                       ↓
+                ┌──────────────┐
+                │    infra     │
+                └──────┬───────┘
+                       ↓
+                ┌──────────────┐
+                │   rollout    │  ⭐ system heart
+                └──────┬───────┘
+          ┌────────────┼────────────┐
+          ↓            ↓            ↓
+        envs         models        data
+                       ↓
+                ┌──────────────┐
+                │  learners    │
+                └──────────────┘
+```
 
 ## 🚀 Quick Start
 
