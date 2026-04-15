@@ -5,6 +5,7 @@ Usage:
 """
 from rl_eng.agents.tic_tac_toe_td import Agent
 from rl_eng.envs.tic_tac_toe import CROSS, CIRCLE
+from rl_eng.rollout import Trajectory
 
 def test_agent_init():
     agent_x = Agent(player='X')
@@ -30,3 +31,12 @@ def test_agent_add_state():
     assert agent.states == ["state1", "state2"]
     assert agent.state_parent_d["state2"] == "state1"
     assert agent.state_isgreedy_d["state2"] is False
+
+
+def test_agent_uses_trajectory_for_episode_state():
+    agent = Agent(player='X')
+
+    assert isinstance(agent.trajectory, Trajectory)
+
+    agent.add_state("state1", is_greedy=True)
+    assert agent.trajectory.last_state == "state1"

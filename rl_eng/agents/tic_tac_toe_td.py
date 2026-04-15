@@ -4,6 +4,7 @@ import numpy as np
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from rl_eng.envs.tic_tac_toe import CROSS, CIRCLE, Environment
+from rl_eng.rollout.trajectory import Trajectory
 
 if TYPE_CHECKING:
     from rl_eng.rollout.tic_tac_toe import SelfPlayMetrics
@@ -56,9 +57,22 @@ class Agent:
 
     def reset_episode(self) -> None:
         """Init episode."""
-        self.states: List[str] = []
-        self.state_parent_d: Dict[str, str] = dict()
-        self.state_isgreedy_d: Dict[str, bool] = dict()
+        self.trajectory = Trajectory()
+
+    @property
+    def states(self) -> List[str]:
+        """Expose ordered states for compatibility with existing callers."""
+        return self.trajectory.states
+
+    @property
+    def state_parent_d(self) -> Dict[str, str]:
+        """Expose parent links for compatibility with existing callers."""
+        return self.trajectory.parent_by_state
+
+    @property
+    def state_isgreedy_d(self) -> Dict[str, bool]:
+        """Expose greedy flags for compatibility with existing callers."""
+        return self.trajectory.is_greedy_by_state
 
     def _exploit_and_explore(self, env: Environment, positions: List[Tuple[int, int]]) -> Tuple[int, int, str, bool]:
         """Exploit and explore by the epsilon-greedy strategy."""
@@ -89,11 +103,7 @@ class Agent:
         return (r, c, state_next, is_greedy)
 
     def add_state(self, state_next: str, is_greedy: bool) -> 'Agent':
-        if self.states:
-            state = self.states[-1]
-            self.state_parent_d[state_next] = state
-        self.state_isgreedy_d[state_next] = is_greedy
-        self.states.append(state_next)
+        self.trajectory.add_step(state=state_next, is_greedy=is_greedy)
         return self
 
     def select_position(self, env: Environment) -> Tuple[int, int, int]:
@@ -111,12 +121,14 @@ class Agent:
 
     def backup_state_value(self) -> None:
         """Back up value by a temporal-difference learning after a greedy move."""
-        s = self.states[-1]
+        s = self.trajectory.last_state
+        if s is None:
+            return
 
         # Traverse back the whole player's states to back up.
-        while s in self.state_parent_d:
-            s_par = self.state_parent_d[s]
-            is_greedy = self.state_isgreedy_d[s]
+        while s in self.trajectory.parent_by_state:
+            s_par = self.trajectory.parent_by_state[s]
+            is_greedy = self.trajectory.is_greedy_by_state[s]
             if is_greedy and self.step_size is not None:
                 self.V[s_par] += self.step_size * (self.V[s] - self.V[s_par])
             s = s_par
