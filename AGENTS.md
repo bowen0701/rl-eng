@@ -11,7 +11,7 @@
 - `rl_eng/multi_armed_bandits.py`: Bandit experiment entrypoint.
 
 Other key directories:
-- `games/tic_tac_toe/`: Pygame launcher and macOS packaging scripts.
+- `artifacts/apps/tic_tac_toe/`: Pygame launcher and macOS packaging scripts.
 - `notebooks/`: Interactive exploration and analysis.
 - `tests/`: Project tests mirroring the main package structure.
 - `runs/`: Runtime artifacts (configs, state-values).
@@ -26,7 +26,7 @@ Install locally with `pip3 install -e .`.
 - `python3 -m mypy rl_eng tests` runs static type checks used by pre-commit.
 - `python3 -m rl_eng.tic_tac_toe train --epochs 100000 --epsilon 0.75` trains a Tic-Tac-Toe agent and writes a run under `runs/`.
 - `python3 scripts/promote_run_to_export.py --run_id <run_id>` promotes a finished run into `artifacts/exports/`.
-- `python3 games/tic_tac_toe/launcher.py --run_id <run_id>` launches the GUI for a saved run.
+- `python3 artifacts/apps/tic_tac_toe/launcher.py --run_id <run_id>` launches the GUI for a saved run.
 
 ## Coding Style & Naming Conventions
 Use Python 3.9+, 4-space indentation, and double quotes. Ruff enforces import ordering, lint rules, and Google-style docstrings; keep line length within 127 characters. 
@@ -39,4 +39,4 @@ Use Python 3.9+, 4-space indentation, and double quotes. Ruff enforces import or
 Write tests with `pytest` in `tests/`, naming files `test_<area>.py` and test functions `test_<behavior>()`. Keep tests close to the module they validate and cover environment transitions, rollout behavior, and training-facing interfaces. Run `python3 -m pytest tests -q` before opening a PR; update or add tests whenever agent logic, environment rules, or CLI behavior changes.
 
 ## Commit & Pull Request Guidelines
-Recent commits use short, imperative subjects such as `Clarify in README: for example tic_tac_toe` and `Move trajectory buffer into data layer`. Follow that style: one-line subject, present tense, focused scope. PRs should include a brief description, linked issue if applicable, exact commands used for verification, and screenshots only for GUI changes under `games/tic_tac_toe/`.
+Recent commits use short, imperative subjects such as `Clarify in README: for example tic_tac_toe` and `Move trajectory buffer into data layer`. Follow that style: one-line subject, present tense, focused scope. PRs should include a brief description, linked issue if applicable, exact commands used for verification, and screenshots only for GUI changes under `artifacts/apps/tic_tac_toe/`.

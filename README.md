@@ -74,7 +74,7 @@ python3 -m pytest tests
 ### 2. Playing (Experimental)
 Launch the Pygame interface using a `run_id` from your local `runs/` folder:
 ```bash
-python3 games/tic_tac_toe/launcher.py --run_id <your_run_id>
+python3 artifacts/apps/tic_tac_toe/launcher.py --run_id <your_run_id>
 ```
 
 ### 3. Promoting to Exports
@@ -87,7 +87,7 @@ Artifacts will be stored in `artifacts/exports/<model_name>_vK/`.
 ## 📦 Distribution
 Package an exported run into a standalone macOS `.app` bundle:
 ```bash
-./games/tic_tac_toe/build_app.sh --run_id <run_id>
+./artifacts/apps/tic_tac_toe/build_app.sh --run_id <run_id>
 ```
 Build outputs are written under `artifacts/apps/tic_tac_toe/`.
 
