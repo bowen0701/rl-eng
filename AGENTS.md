@@ -1,7 +1,7 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-`rl_eng/` contains the core Python package: environment logic in `rl_eng/envs/`, agents in `rl_eng/agents/`, rollout helpers in `rl_eng/rollout/`, and the Tic-Tac-Toe CLI entrypoint in `rl_eng/tic_tac_toe.py`. `games/tic_tac_toe/` holds the Pygame launcher and macOS packaging script. `tests/` mirrors the main package with focused files such as `test_env_tic_tac_toe.py` and `test_rollout_tic_tac_toe.py`. Runtime artifacts belong in `runs/`, promoted exports in `artifacts/exports/`, and packaged apps in `artifacts/apps/`; treat them as generated output, not source.
+`rl_eng/` contains the core Python package: environment logic in `rl_eng/envs/`, agents in `rl_eng/agents/`, rollout helpers in `rl_eng/rollout/`, data primitives in `rl_eng/data/`, and common configurations in `rl_eng/config.py`. The Tic-Tac-Toe CLI entrypoint is `rl_eng/tic_tac_toe.py`, and `rl_eng/multi_armed_bandits.py` handles bandit experiments. `games/tic_tac_toe/` holds the Pygame launcher and macOS packaging script. `notebooks/` contains interactive exploration and analysis. `tests/` mirrors the main package with focused files such as `test_env_tic_tac_toe.py` and `test_rollout_tic_tac_toe.py`. Runtime artifacts belong in `runs/`, while `artifacts/` stores promoted exports, checkpoints, and evaluation reports; treat them as generated output, not source.
 
 ## Build, Test, and Development Commands
 Install locally with `pip3 install -e .`.
