@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-scripts/promote_run_to_stable.py
+scripts/promote_run_to_export.py
 ===============================
-Graduates an experimental training run to the 'models/stable' Model Zoo.
+Promotes an experimental training run into `artifacts/exports/`.
 
 Scalable Infra Features:
 1. Dynamic Discovery: Reads config.yaml to determine the environment/model name.
@@ -10,7 +10,7 @@ Scalable Infra Features:
 3. Versioning: Supports industry-standard v0.x (experimental) and v1.x (production).
 
 Usage:
-    python3 scripts/promote_run_to_stable.py --run_id <id> [--major] [--version <x.y>]
+    python3 scripts/promote_run_to_export.py --run_id <id> [--major] [--version <x.y>]
 """
 
 import argparse
@@ -20,7 +20,7 @@ import re
 import shutil
 from datetime import datetime
 
-STABLE_DIR = "models/stable"
+EXPORTS_DIR = "artifacts/exports"
 RUNS_DIR = "runs"
 
 def get_config_env(run_path: str) -> str:
@@ -40,13 +40,13 @@ def get_config_env(run_path: str) -> str:
     return ""
 
 def get_next_version(model_name: str, bump_major: bool = False) -> str:
-    """Calculates next version based on existing folders in stable/."""
+    """Calculates next version based on existing folders in exports/."""
     pattern = re.compile(rf"^{model_name}_v(\d+)\.(\d+)$")
     h_maj, h_min = 0, 0
     found = False
 
-    if os.path.exists(STABLE_DIR):
-        for item in os.listdir(STABLE_DIR):
+    if os.path.exists(EXPORTS_DIR):
+        for item in os.listdir(EXPORTS_DIR):
             match = pattern.match(item)
             if match:
                 found = True
@@ -64,7 +64,7 @@ def get_next_version(model_name: str, bump_major: bool = False) -> str:
     return f"{h_maj}.{h_min + 1}"
 
 def main():
-    parser = argparse.ArgumentParser(description="Promote RL run to stable.")
+    parser = argparse.ArgumentParser(description="Promote an RL run to exports.")
     parser.add_argument("--run_id", required=True)
     parser.add_argument("--major", action="store_true", help="Bump to next major version.")
     parser.add_argument("--version", help="Manual version override.")
@@ -86,7 +86,7 @@ def main():
     # 2. Versioning
     ver = args.version.lstrip('v') if args.version else get_next_version(model_name, args.major)
     target_dir_name = f"{model_name}_v{ver}"
-    target_path = os.path.join(STABLE_DIR, target_dir_name)
+    target_path = os.path.join(EXPORTS_DIR, target_dir_name)
 
     if os.path.exists(target_path):
         print(f"[error] Version v{ver} already exists at {target_path}"); return
@@ -108,15 +108,15 @@ def main():
     # 4. Persistence Metadata
     meta = {
         "original_run_id": args.run_id,
-        "graduation_timestamp": datetime.now().isoformat(),
+        "promotion_timestamp": datetime.now().isoformat(),
         "model_name": model_name,
         "version": f"v{ver}",
         "files_graduated": artifact_count
     }
-    with open(os.path.join(target_path, "graduation_metadata.json"), 'w') as f:
+    with open(os.path.join(target_path, "export_metadata.json"), 'w') as f:
         json.dump(meta, f, indent=4)
 
-    print(f"\n[success] {model_name} graduated to v{ver} ({artifact_count} files)")
+    print(f"\n[success] {model_name} promoted to exports v{ver} ({artifact_count} files)")
 
 if __name__ == "__main__":
     main()

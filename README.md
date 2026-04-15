@@ -19,6 +19,12 @@ rl-eng/
 │   └── interfaces/             # contracts between subsystems
 ├── scripts/                    # ⭐ entrypoints (thin orchestration only)
 ├── experiments/                # configs (YAML / Hydra style)
+├── artifacts/
+│   ├── checkpoints/
+│   ├── exports/
+│   ├── eval_reports/
+│   ├── traces/
+│   └── apps/
 ├── tests/
 ├── pyproject.toml
 └── README.md
@@ -71,18 +77,19 @@ Launch the Pygame interface using a `run_id` from your local `runs/` folder:
 python3 games/tic_tac_toe/launcher.py --run_id <your_run_id>
 ```
 
-### 3. Graduating to Stable
-Once a model is performing perfectly, graduate it to the Model Zoo. This automates versioning and metadata generation:
+### 3. Promoting to Exports
+Once a run is ready for reuse, promote it into the exports bucket. This automates versioning and metadata generation:
 ```bash
-python3 scripts/promote_run_to_stable.py --run_id <your_run_id>
+python3 scripts/promote_run_to_export.py --run_id <your_run_id>
 ```
-Artifacts will be stored in `models/stable/<model_name>_vK/`.
+Artifacts will be stored in `artifacts/exports/<model_name>_vK/`.
 
 ## 📦 Distribution
-Package your stable models into a standalone macOS `.app` bundle:
+Package an exported run into a standalone macOS `.app` bundle:
 ```bash
 ./games/tic_tac_toe/build_app.sh --run_id <run_id>
 ```
+Build outputs are written under `artifacts/apps/tic_tac_toe/`.
 
 ## 🛠 Engineering Standards
 *   **Linting/Formatting**: Managed via `ruff`.

@@ -28,7 +28,7 @@ Packaging (run from project root):
     #         run identifier, e.g. 20240101_120000.
     ./games/tic_tac_toe/build_app.sh --run_id <run_id>
 
-    # Output: games/tic_tac_toe/dist/TicTacToe.zip
+    # Output: artifacts/apps/tic_tac_toe/dist/TicTacToe.zip
     #   - Unzip and double-click TicTacToe.app to play.
     #   - First launch: right-click -> Open to bypass macOS Gatekeeper.
     #   - Subsequent launches: double-click as normal.

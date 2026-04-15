@@ -11,6 +11,14 @@ build/
 # ML artifacts
 # models/
 runs/
+artifacts/checkpoints/*
+!artifacts/checkpoints/.gitkeep
+artifacts/eval_reports/*
+!artifacts/eval_reports/.gitkeep
+artifacts/traces/*
+!artifacts/traces/.gitkeep
+artifacts/apps/*
+!artifacts/apps/.gitkeep
 
 # Venv (common names)
 .venv/

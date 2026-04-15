@@ -43,6 +43,7 @@ fi
 APP_NAME="TicTacToe"
 RUN_DIR="runs/${RUN_ID}"
 GAME_DIR="games/tic_tac_toe"
+APP_ARTIFACT_DIR="artifacts/apps/tic_tac_toe"
 
 echo "============================================================"
 echo " RL-Eng Tic-Tac-Toe -- macOS App Builder"
@@ -51,6 +52,7 @@ echo " App name : ${APP_NAME}"
 echo " Run ID   : ${RUN_ID}"
 echo " Run dir  : ${RUN_DIR}"
 echo " Game dir : ${GAME_DIR}"
+echo " Output   : ${APP_ARTIFACT_DIR}"
 echo "============================================================"
 
 # ---------------------------------------------------------------------------
@@ -78,7 +80,8 @@ fi
 # ---------------------------------------------------------------------------
 
 echo "[build_app] Cleaning previous build artifacts..."
-rm -rf "${GAME_DIR}/build/" "${GAME_DIR}/dist/" "${GAME_DIR}/${APP_NAME}.spec"
+mkdir -p "${APP_ARTIFACT_DIR}"
+rm -rf "${APP_ARTIFACT_DIR}/build/" "${APP_ARTIFACT_DIR}/dist/" "${APP_ARTIFACT_DIR}/${APP_NAME}.spec"
 
 # ---------------------------------------------------------------------------
 # 5. Run PyInstaller via python3 -m to ensure it uses the correct environment.
@@ -94,9 +97,9 @@ python3 -m PyInstaller \
     --onedir \
     --windowed \
     --name "${APP_NAME}" \
-    --workpath "${GAME_DIR}/build" \
-    --distpath "${GAME_DIR}/dist" \
-    --specpath "${GAME_DIR}" \
+    --workpath "${APP_ARTIFACT_DIR}/build" \
+    --distpath "${APP_ARTIFACT_DIR}/dist" \
+    --specpath "${APP_ARTIFACT_DIR}" \
     --add-data "${ABS_ROOT}/rl_eng:rl_eng" \
     --add-data "${ABS_ROOT}/${RUN_DIR}:${RUN_DIR}" \
     --add-data "${ABS_ROOT}/${GAME_DIR}:games/tic_tac_toe" \
@@ -111,7 +114,7 @@ echo "[build_app] PyInstaller finished."
 # 6. Inject wrapper
 # ---------------------------------------------------------------------------
 
-MACOS_DIR="${GAME_DIR}/dist/${APP_NAME}.app/Contents/MacOS"
+MACOS_DIR="${APP_ARTIFACT_DIR}/dist/${APP_NAME}.app/Contents/MacOS"
 REAL_BIN="${MACOS_DIR}/${APP_NAME}_bin"
 WRAPPER="${MACOS_DIR}/${APP_NAME}"
 
@@ -131,17 +134,17 @@ chmod +x "${WRAPPER}"
 # ---------------------------------------------------------------------------
 
 echo "[build_app] Signing the app..."
-codesign --deep --force --sign "-" "${GAME_DIR}/dist/${APP_NAME}.app" || true
+codesign --deep --force --sign "-" "${APP_ARTIFACT_DIR}/dist/${APP_NAME}.app" || true
 
 # ---------------------------------------------------------------------------
 # 8. Zip
 # ---------------------------------------------------------------------------
 
 echo "[build_app] Creating distributable zip..."
-cd "${GAME_DIR}/dist"
+cd "${APP_ARTIFACT_DIR}/dist"
 zip -r "${APP_NAME}.zip" "${APP_NAME}.app"
 cd - > /dev/null
 
 echo "============================================================"
-echo " Build complete: ${GAME_DIR}/dist/${APP_NAME}.zip"
+echo " Build complete: ${APP_ARTIFACT_DIR}/dist/${APP_NAME}.zip"
 echo "============================================================"
