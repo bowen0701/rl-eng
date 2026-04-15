@@ -1,9 +1,12 @@
 import json
 import os
 import numpy as np
-from typing import Dict, List, Tuple, Optional, Any
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from rl_eng.envs.tic_tac_toe import CROSS, CIRCLE, Environment
+
+if TYPE_CHECKING:
+    from rl_eng.rollout.tic_tac_toe import SelfPlayMetrics
 
 class Agent:
     """Agent class for Tic-Tac-Toe game."""
@@ -133,79 +136,28 @@ class Agent:
             self.V = json.load(f)
 
 
-def self_train(epochs: int = int(1e5), 
-               step_size: float = 0.01, 
-               epsilon: float = 0.01, 
-               print_per_epochs: int = 500, 
-               seed: Optional[int] = None, 
-               run_dir: Optional[str] = None, 
-               win_reward: float = 1.0, 
-               loss_reward: float = 0.0, 
-               tie_reward: float = 0.5) -> None:
-    """Self train an agent by playing games against itself."""
-    if seed is not None:
-        np.random.seed(seed)
+def self_train(
+    epochs: int = int(1e5),
+    step_size: float = 0.01,
+    epsilon: float = 0.01,
+    print_per_epochs: int = 500,
+    seed: Optional[int] = None,
+    run_dir: Optional[str] = None,
+    win_reward: float = 1.0,
+    loss_reward: float = 0.0,
+    tie_reward: float = 0.5,
+) -> "SelfPlayMetrics":
+    """Compatibility wrapper for the rollout-owned self-play loop."""
+    from rl_eng.rollout.tic_tac_toe import self_train as rollout_self_train
 
-    agent1 = Agent(player='X', step_size=step_size, epsilon=epsilon, 
-                   win_reward=win_reward, loss_reward=loss_reward, tie_reward=tie_reward)
-    agent2 = Agent(player='O', step_size=step_size, epsilon=epsilon,
-                   win_reward=win_reward, loss_reward=loss_reward, tie_reward=tie_reward)
-    agent1.init_state_value_table()
-    agent2.init_state_value_table()
-
-    n_agent1_wins = 0
-    n_agent2_wins = 0
-    n_ties = 0
-
-    for i in range(1, epochs + 1):
-        # Reset both agents after epoch was done.
-        env = Environment()
-        agent1.reset_episode()
-        agent2.reset_episode()
-
-        while not env.is_done():
-            # Agent 1 plays one step.
-            r1, c1, symbol1 = agent1.select_position(env)
-            env = env.step(r1, c1, symbol1)
-            agent1.backup_state_value()
-
-            if env.is_done():
-                break
-
-            # Agent 2 plays the next step.
-            r2, c2, symbol2 = agent2.select_position(env)
-            env = env.step(r2, c2, symbol2)
-            agent2.backup_state_value()
-
-        # Set final state with is_greedy=True to backup loser's value.
-        is_greedy = True
-        if env.winner == CROSS:
-            n_agent1_wins += 1
-
-            agent2.add_state(env.state, is_greedy)
-            agent2.backup_state_value()
-        elif env.winner == CIRCLE:
-            n_agent2_wins += 1
-
-            agent1.add_state(env.state, is_greedy)
-            agent1.backup_state_value()
-        else:
-            n_ties += 1
-
-            # In a tie, Agent 1 just moved (9th move), Agent 2 needs to back up.
-            agent2.add_state(env.state, is_greedy)
-            agent2.backup_state_value()
-
-        # Print board.
-        if i % print_per_epochs == 0:
-            print('Epoch {}: Agent1 wins {}, Agent2 wins {}, ties {}'
-                  .format(i,
-                          round(n_agent1_wins / i, 2), 
-                          round(n_agent2_wins / i, 2), 
-                          round(n_ties / i, 2)))
-            env.show_board()
-            print('---')
-
-    if run_dir:
-        agent1.save_state_value_table(run_dir)
-        agent2.save_state_value_table(run_dir)
+    return rollout_self_train(
+        epochs=epochs,
+        step_size=step_size,
+        epsilon=epsilon,
+        print_per_epochs=print_per_epochs,
+        seed=seed,
+        run_dir=run_dir,
+        win_reward=win_reward,
+        loss_reward=loss_reward,
+        tie_reward=tie_reward,
+    )

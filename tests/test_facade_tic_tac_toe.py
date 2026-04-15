@@ -1,7 +1,7 @@
 """
 Usage:
-    # From project root:
     python3 -m pytest tests/test_facade_tic_tac_toe.py
+    python3 -m pytest tests
 """
 from rl_eng import tic_tac_toe
 

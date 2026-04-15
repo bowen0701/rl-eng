@@ -1,7 +1,7 @@
 """
 Usage:
-    # From project root:
     python3 -m pytest tests/test_agent_tic_tac_toe_td.py
+    python3 -m pytest tests
 """
 from rl_eng.agents.tic_tac_toe_td import Agent
 from rl_eng.envs.tic_tac_toe import CROSS, CIRCLE
