@@ -3,7 +3,7 @@ from typing import Any
 
 
 class Model(ABC):
-    """Abstract base class for all neural networks or value tables (pure functions)."""
+    """Abstract base class for all Neural Nets or value tables (pure functions)."""
 
     @abstractmethod
     def forward(self, *args: Any, **kwargs: Any) -> Any:

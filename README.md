@@ -12,11 +12,15 @@ rl-eng/
 ├── rl_eng/                     # ⭐ core Python package (system)
 │   ├── rollout/                # sampling + execution engine (heart)
 │   ├── learners/               # PPO / DPO / diffusion optimizers
-│   ├── models/                 # neural nets (pure functions)
+│   ├── models/                 # Neural Nets (pure functions)
 │   ├── envs/                   # interaction backends (gym / text / sim)
 │   ├── data/                   # trajectories / buffers / datasets
 │   ├── infra/                  # distributed, logging, config, checkpoint
 │   └── interfaces/             # contracts between subsystems
+│       ├── env.py              # environment state-transition backends
+│       ├── model.py            # Neural Nets / value table pure functions
+│       ├── learner.py          # optimizer logic (PPO, DPO, etc)
+│       └── rollout.py          # sampling + execution orchestration
 ├── scripts/                    # ⭐ entrypoints (thin orchestration only)
 ├── experiments/                # configs (YAML / Hydra style)
 ├── artifacts/
