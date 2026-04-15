@@ -1,8 +1,6 @@
 """Rollout execution package."""
 
-from rl_eng.rollout.trajectory import Trajectory, TrajectoryStep
-
-__all__ = ["SelfPlayMetrics", "Trajectory", "TrajectoryStep", "self_train"]
+__all__ = ["SelfPlayMetrics", "self_train"]
 
 
 def __getattr__(name: str):

@@ -1,4 +1,4 @@
-"""Trajectory primitives for rollout execution."""
+"""Trajectory primitives for rollout buffers and offline data."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from typing import Dict, List, Optional
 
 @dataclass(frozen=True)
 class TrajectoryStep:
-    """A single visited state within a rollout trajectory."""
+    """A single visited state within a trajectory."""
 
     state: str
     is_greedy: bool

@@ -3,8 +3,8 @@ import os
 import numpy as np
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
+from rl_eng.data import Trajectory
 from rl_eng.envs.tic_tac_toe import CROSS, CIRCLE, Environment
-from rl_eng.rollout.trajectory import Trajectory
 
 if TYPE_CHECKING:
     from rl_eng.rollout.tic_tac_toe import SelfPlayMetrics

@@ -5,7 +5,7 @@ Usage:
 """
 
 from rl_eng.agents.tic_tac_toe_td import self_train as agent_self_train
-from rl_eng.rollout import Trajectory
+from rl_eng.data import Trajectory
 from rl_eng.rollout.tic_tac_toe import SelfPlayMetrics, self_train
 
 
