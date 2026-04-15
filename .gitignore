@@ -42,3 +42,8 @@ Thumbs.db
 .env
 *.local
 secrets.*
+
+# AI assistant tooling
+.agents/
+.claude/
+.gemini/
