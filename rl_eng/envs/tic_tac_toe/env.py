@@ -1,6 +1,7 @@
 from __future__ import annotations
-from typing import List, Tuple, Dict, Optional
+from typing import Any, List, Optional
 import numpy as np
+from rl_eng.interfaces.env import Environment as BaseEnvironment
 
 NMARKS: int = 3
 BOARD_NROWS: int = 3
@@ -11,7 +12,7 @@ CROSS: int = 1
 CIRCLE: int = -1
 EMPTY: int = 0
 
-class Environment:
+class Environment(BaseEnvironment):
     """Environment class for Tic-Tac Toe."""
 
     def __init__(self) -> None:
@@ -26,9 +27,9 @@ class Environment:
         """Computes a string hash of the board state."""
         return ','.join([str(x) for x in list(board.reshape(BOARD_SIZE))])
 
-    def get_positions(self) -> List[Tuple[int, int]]:
+    def get_actions(self) -> List[Any]:
         """Get possible action positions given current board."""
-        positions: List[Tuple[int, int]] = []
+        positions: List[Any] = []
         for r in range(BOARD_NROWS):
             for c in range(BOARD_NCOLS):
                 if self.board[r][c] == EMPTY:
@@ -93,50 +94,3 @@ class Environment:
         env_next.steps_left -= 1
         env_next._judge()
         return env_next
-
-    def show_board(self) -> None:
-        """Show board."""
-        board_list = self.board.tolist()
-        printable_board: List[List[str]] = []
-        for r in range(BOARD_NROWS):
-            row: List[str] = []
-            for c in range(BOARD_NCOLS):
-                if board_list[r][c] == CROSS:
-                    row.append('X')
-                elif board_list[r][c] == CIRCLE:
-                    row.append('O')
-                else:
-                    row.append(' ')
-            printable_board.append(row)
-
-        print('Board: is_done={}, steps_left={}, winner={}'
-              .format(self.is_done(), self.steps_left, self.winner))
-        for r in range(BOARD_NROWS):
-            print(printable_board[r])
-
-    @staticmethod
-    def _dfs_states(cur_symbol: int, env: Environment, all_state_env_d: Dict[str, Environment]) -> None:
-        """DFS for next state by recursion."""
-        for r in range(BOARD_NROWS):
-            for c in range(BOARD_NCOLS):
-                if env.board[r][c] == EMPTY:
-                    env_next = env.step(r, c, cur_symbol)
-                    if env_next.state not in all_state_env_d:
-                        all_state_env_d[env_next.state] = env_next
-
-                        # If game is not ended, continue DFS.
-                        if not env_next.is_done():
-                            Environment._dfs_states(-cur_symbol, env_next, all_state_env_d)
-
-    @classmethod
-    def get_all_states(cls) -> Dict[str, Environment]:
-        """Get all states from the init state."""
-        # The player who plays first always uses 'X'.
-        cur_symbol = CROSS
-
-        # Apply DFS to collect all states.
-        env = Environment()
-        all_state_env_d: Dict[str, Environment] = dict()
-        all_state_env_d[env.state] = env
-        cls._dfs_states(cur_symbol, env, all_state_env_d)
-        return all_state_env_d

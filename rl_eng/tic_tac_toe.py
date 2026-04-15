@@ -14,6 +14,7 @@ import yaml
 
 from rl_eng.config import BaseConfig
 from rl_eng.envs.tic_tac_toe import CROSS, CIRCLE, EMPTY, NMARKS, BOARD_NROWS, BOARD_NCOLS, BOARD_SIZE, Environment
+from rl_eng.envs.tic_tac_toe.utils import show_board
 from rl_eng.agents.tic_tac_toe_td import Agent
 from rl_eng.rollout.tic_tac_toe import self_train
 
@@ -69,7 +70,7 @@ def human_agent_compete(run_dir: str, config: TicTacToeConfig) -> None:
             break
 
     env = Environment()
-    env.show_board()
+    show_board(env)
     print('---')
 
     # Set up human & agent as player1 or player2.
@@ -93,7 +94,7 @@ def human_agent_compete(run_dir: str, config: TicTacToeConfig) -> None:
         env = env.step(r1, c1, symbol1)
         print('Player1, {} ({}), puts ({}, {})'
               .format(player1_name, player1.player, r1, c1))
-        env.show_board()
+        show_board(env)
         print('---')
 
         if env.is_done():
@@ -104,7 +105,7 @@ def human_agent_compete(run_dir: str, config: TicTacToeConfig) -> None:
         env = env.step(r2, c2, symbol2)
         print('Player2, {} ({}), puts ({}, {})'
               .format(player2_name, player2.player, r2, c2))
-        env.show_board()
+        show_board(env)
         print('---')
 
     # Judge the winner.

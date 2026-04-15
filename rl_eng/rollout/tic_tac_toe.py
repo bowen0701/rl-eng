@@ -8,7 +8,8 @@ from typing import Optional
 import numpy as np
 
 from rl_eng.agents.tic_tac_toe_td import Agent
-from rl_eng.envs.tic_tac_toe import CIRCLE, CROSS, Environment
+from rl_eng.envs.tic_tac_toe import Environment, CROSS, CIRCLE, show_board
+from rl_eng.learners.td import TDLearner
 
 
 @dataclass
@@ -54,6 +55,8 @@ def self_train(
     agent1.init_state_value_table()
     agent2.init_state_value_table()
 
+    learner = TDLearner(step_size=step_size)
+
     metrics = SelfPlayMetrics()
     for epoch in range(1, epochs + 1):
         env = Environment()
@@ -63,16 +66,18 @@ def self_train(
         while not env.is_done():
             r1, c1, symbol1 = agent1.select_position(env)
             env = env.step(r1, c1, symbol1)
-            agent1.backup_state_value()
+            learner.update(agent1.trajectory, agent1.model)
 
             if env.is_done():
                 break
 
             r2, c2, symbol2 = agent2.select_position(env)
             env = env.step(r2, c2, symbol2)
-            agent2.backup_state_value()
+            learner.update(agent2.trajectory, agent2.model)
 
-        _finalize_terminal_transition(env=env, agent1=agent1, agent2=agent2, metrics=metrics)
+        _finalize_terminal_transition(
+            env=env, agent1=agent1, agent2=agent2, learner=learner, metrics=metrics
+        )
 
         if epoch % print_per_epochs == 0:
             print(
@@ -83,7 +88,7 @@ def self_train(
                     round(metrics.ties / epoch, 2),
                 )
             )
-            env.show_board()
+            show_board(env)
             print("---")
 
     if run_dir:
@@ -97,6 +102,7 @@ def _finalize_terminal_transition(
     env: Environment,
     agent1: Agent,
     agent2: Agent,
+    learner: TDLearner,
     metrics: SelfPlayMetrics,
 ) -> None:
     """Apply the final backup needed after a terminal transition."""
@@ -104,15 +110,15 @@ def _finalize_terminal_transition(
     if env.winner == CROSS:
         metrics.agent1_wins += 1
         agent2.add_state(env.state, is_greedy)
-        agent2.backup_state_value()
+        learner.update(agent2.trajectory, agent2.model)
         return
 
     if env.winner == CIRCLE:
         metrics.agent2_wins += 1
         agent1.add_state(env.state, is_greedy)
-        agent1.backup_state_value()
+        learner.update(agent1.trajectory, agent1.model)
         return
 
     metrics.ties += 1
     agent2.add_state(env.state, is_greedy)
-    agent2.backup_state_value()
+    learner.update(agent2.trajectory, agent2.model)
