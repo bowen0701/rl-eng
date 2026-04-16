@@ -11,6 +11,12 @@ from rl_eng.models.state_value_table import StateValueTable
 if TYPE_CHECKING:
     from rl_eng.rollout.tic_tac_toe import SelfPlayMetrics
 
+# TODO: Refactor Agent to Actor / Rollout (interacts with env).
+# rl_eng/rollout/
+#   actor.py
+#   action_selection.py
+#   trajectory_collector.py
+
 class Agent:
     """Agent class for Tic-Tac-Toe game."""
 
@@ -131,7 +137,7 @@ class Agent:
         if self.step_size is None:
             return
 
-        from rl_eng.learners.td import TDLearner
+        from rl_eng.learners.td_learner import TDLearner
 
         learner = TDLearner(step_size=self.step_size)
         learner.update(self.trajectory, self.model)

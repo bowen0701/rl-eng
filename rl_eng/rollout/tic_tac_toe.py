@@ -9,7 +9,7 @@ import numpy as np
 
 from rl_eng.agents.tic_tac_toe_td import Agent
 from rl_eng.envs.tic_tac_toe import Environment, CROSS, CIRCLE, show_board
-from rl_eng.learners.td import TDLearner
+from rl_eng.learners.td_learner import TDLearner
 
 
 @dataclass

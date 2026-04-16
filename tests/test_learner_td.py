@@ -2,7 +2,7 @@
 
 import pytest
 from rl_eng.data.trajectory import Trajectory
-from rl_eng.learners.td import TDLearner
+from rl_eng.learners.td_learner import TDLearner
 
 
 from rl_eng.models.state_value_table import StateValueTable
