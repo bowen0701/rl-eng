@@ -48,13 +48,13 @@ def test_self_train_writes_metrics_and_eval_csv(tmp_path):
 
     assert metrics.agent1_wins + metrics.agent2_wins + metrics.ties == 5
 
-    with open(tmp_path / "metrics.csv", "r", newline="") as f:
+    with open(tmp_path / "train_metrics.csv", "r", newline="") as f:
         metrics_rows = list(csv.DictReader(f))
 
     assert [int(row["episode"]) for row in metrics_rows] == [2, 4, 5]
     assert [int(row["window_size"]) for row in metrics_rows] == [2, 2, 1]
 
-    with open(tmp_path / "eval.csv", "r", newline="") as f:
+    with open(tmp_path / "eval_metrics.csv", "r", newline="") as f:
         eval_rows = list(csv.DictReader(f))
 
     assert len(eval_rows) == 8
