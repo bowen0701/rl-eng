@@ -65,7 +65,13 @@ rl-eng/
 ```bash
 # Clone and install dependencies
 git clone https://github.com/bowenlee/rl-eng.git
-pip3 install -e .
+cd rl-eng
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install -e .
+python -m pip install pytest
+```
 ```
 
 ### 1. Training & Testing
