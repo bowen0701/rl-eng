@@ -2,7 +2,7 @@
 """
 scripts/promote_run_to_export.py
 ===============================
-Promotes an experimental training run into `artifacts/exports/`.
+Promotes an experimental training run into `exports/`.
 
 Scalable Infra Features:
 1. Dynamic Discovery: Reads config.yaml to determine the environment/model name.
@@ -14,29 +14,46 @@ Usage:
 """
 
 import argparse
-import json
 import os
 import re
 import shutil
 from datetime import datetime
 
-EXPORTS_DIR = "artifacts/exports"
-RUNS_DIR = "runs"
+import yaml # Ensure yaml is imported for dumping
 
-def get_config_env(run_path: str) -> str:
-    """Extracts the 'env' name from config.yaml."""
-    config_path = os.path.join(run_path, "config.yaml")
-    if not os.path.exists(config_path):
+EXPORTS_DIR = "exports" # Changed from "artifacts/exports"
+EXPERIMENTS_DIR = "experiments"
+
+def find_run_path(run_id: str) -> str:
+    """Finds the full path to a run directory by searching within experiments/."""
+    if not os.path.exists(EXPERIMENTS_DIR):
         return ""
     
-    try:
-        # Simple line-based parse to avoid heavy yaml dependency in graduation script
-        with open(config_path, 'r') as f:
-            for line in f:
-                if line.strip().startswith("env:"):
-                    return line.split(":")[1].strip()
-    except Exception:
-        pass
+    for exp_name in os.listdir(EXPERIMENTS_DIR):
+        exp_path = os.path.join(EXPERIMENTS_DIR, exp_name)
+        if not os.path.isdir(exp_path):
+            continue
+            
+        runs_dir = os.path.join(exp_path, "runs")
+        if os.path.exists(runs_dir):
+            run_path = os.path.join(runs_dir, run_id)
+            if os.path.isdir(run_path):
+                return run_path
+    return ""
+
+def get_config_env(run_path: str) -> str:
+    """Extracts the 'env' name from config.yml (falls back to config.yaml)."""
+    for name in ("config.yml", "config.yaml"):
+        config_path = os.path.join(run_path, name)
+        if not os.path.exists(config_path):
+            continue
+        try:
+            with open(config_path, 'r') as f:
+                for line in f:
+                    if line.strip().startswith("env:"):
+                        return line.split(":")[1].strip()
+        except Exception:
+            pass
     return ""
 
 def get_next_version(model_name: str, bump_major: bool = False) -> str:
@@ -70,9 +87,9 @@ def main():
     parser.add_argument("--version", help="Manual version override.")
     args = parser.parse_args()
 
-    run_path = os.path.join(RUNS_DIR, args.run_id)
-    if not os.path.isdir(run_path):
-        print(f"[error] Run directory not found: {run_path}"); return
+    run_path = find_run_path(args.run_id)
+    if not run_path:
+        print(f"[error] Run directory not found for run_id: {args.run_id}"); return
 
     # 1. Discover Identity from Config
     model_name = get_config_env(run_path)
@@ -101,7 +118,10 @@ def main():
         if os.path.isfile(s) and not item.startswith('.'):
             shutil.copy2(s, target_path)
             artifact_count += 1
-    
+        elif item == "checkpoints" and os.path.isdir(s):
+            shutil.copytree(s, os.path.join(target_path, "checkpoints"))
+            artifact_count += len(os.listdir(s))
+
     if artifact_count == 0:
         print("[warn] No files were found to graduate!"); shutil.rmtree(target_path); return
 
@@ -113,8 +133,8 @@ def main():
         "version": f"v{ver}",
         "files_graduated": artifact_count
     }
-    with open(os.path.join(target_path, "export_metadata.json"), 'w') as f:
-        json.dump(meta, f, indent=4)
+    with open(os.path.join(target_path, "export_metadata.yaml"), 'w') as f: # Changed to .yaml
+        yaml.dump(meta, f, indent=4) # Changed to yaml.dump
 
     print(f"\n[success] {model_name} promoted to exports v{ver} ({artifact_count} files)")
 

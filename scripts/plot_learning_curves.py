@@ -36,13 +36,13 @@ def main() -> None:
     args = parse_args()
     run_dir = resolve_run_dir(args)
 
-    metrics_path = os.path.join(run_dir, "metrics.csv")
-    eval_path = os.path.join(run_dir, "eval.csv")
+    metrics_path = os.path.join(run_dir, "train_metrics.csv")
+    eval_path = os.path.join(run_dir, "eval_metrics.csv")
 
     if not os.path.exists(metrics_path):
-        raise FileNotFoundError(f"metrics.csv not found at {metrics_path}")
+        raise FileNotFoundError(f"train_metrics.csv not found at {metrics_path}")
     if not os.path.exists(eval_path):
-        raise FileNotFoundError(f"eval.csv not found at {eval_path}")
+        raise FileNotFoundError(f"eval_metrics.csv not found at {eval_path}")
 
     try:
         import matplotlib.pyplot as plt
@@ -52,8 +52,8 @@ def main() -> None:
     metrics_rows = read_csv_rows(metrics_path)
     eval_rows = read_csv_rows(eval_path)
 
-    _plot_training_curves(plt, metrics_rows, os.path.join(run_dir, "training_curves.png"))
-    _plot_eval_curves(plt, eval_rows, os.path.join(run_dir, "evaluation_curves.png"))
+    _plot_training_curves(plt, metrics_rows, os.path.join(run_dir, "train_curve.png"))
+    _plot_eval_curves(plt, eval_rows, os.path.join(run_dir, "eval_curve.png"))
 
 
 def _plot_training_curves(plt, rows: List[Dict[str, str]], output_path: str) -> None:
