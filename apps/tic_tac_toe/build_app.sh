@@ -41,7 +41,7 @@ if [[ -z "$RUN_ID" ]]; then
 fi
 
 APP_NAME="TicTacToe"
-RUN_DIR="runs/${RUN_ID}"
+RUN_DIR="experiments/tic_tac_toe/runs/${RUN_ID}"
 SOURCE_DIR="apps/tic_tac_toe"
 APP_ARTIFACT_DIR="artifacts/apps/tic_tac_toe"
 
@@ -101,10 +101,11 @@ python3 -m PyInstaller \
     --distpath "${APP_ARTIFACT_DIR}/dist" \
     --specpath "${APP_ARTIFACT_DIR}" \
     --add-data "${ABS_ROOT}/rl_eng:rl_eng" \
+    --add-data "${ABS_ROOT}/experiments/tic_tac_toe:experiments/tic_tac_toe" \
     --add-data "${ABS_ROOT}/${RUN_DIR}:${RUN_DIR}" \
     --add-data "${ABS_ROOT}/${SOURCE_DIR}:apps/tic_tac_toe" \
     --hidden-import "rl_eng" \
-    --hidden-import "rl_eng.tic_tac_toe" \
+    --hidden-import "experiments.tic_tac_toe" \
     --hidden-import "pygame" \
     "${SOURCE_DIR}/launcher.py"
 
