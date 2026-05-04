@@ -1,0 +1,6 @@
+env: multi_armed_bandits
+seed: 42
+training:
+  K: 10
+  runs: 2000
+  steps: 1000
