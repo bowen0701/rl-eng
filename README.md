@@ -5,28 +5,26 @@
 ---
 
 ## 🏗 Project Architecture
-The repository is evolving toward a clearer RL systems layout where rollout owns execution, data owns trajectories, and scripts stay thin:
+The repository is organized around a small core package, run-local experiment outputs, and a thin set of scripts and app launchers:
 
 ```text
 rl-eng/
-├── rl_eng/                     # ⭐ core Python package (system)
-│   ├── rollout/                # sampling + execution engine (heart)
-│   ├── learners/               # PPO / DPO / diffusion optimizers
-│   ├── models/                 # Neural Nets (pure functions)
-│   ├── envs/                   # interaction backends (gym / text / sim)
-│   ├── data/                   # trajectories / buffers / datasets
-│   ├── infra/                  # distributed, logging, config, checkpoint
-│   └── interfaces/             # contracts between subsystems
-│       ├── env.py              # environment state-transition backends
-│       ├── model.py            # Neural Nets / value table pure functions
-│       ├── learner.py          # optimizer logic (PPO, DPO, etc)
-│       └── rollout.py          # sampling + execution orchestration
-├── scripts/                    # ⭐ entrypoints (thin orchestration only)
-├── experiments/                # configs (YAML / Hydra style)
-├── apps/                       # checked-in app launchers and packaging scripts
+├── apps/                       # checked-in launcher / packaging scripts
+│   └── tic_tac_toe/
+├── rl_eng/                     # core Python package
+│   ├── agents/
+│   ├── data/
+│   ├── envs/
+│   ├── evaluation/
+│   ├── learners/
+│   ├── models/
+│   ├── rollout/
+│   └── tic_tac_toe.py          # training / play CLI
+├── scripts/                    # utility scripts (promotion, plotting)
 ├── artifacts/
-│   ├── exports/
+│   ├── exports/                # promoted model exports
 │   └── apps/                   # generated app bundles and build outputs
+├── runs/                       # run-local configs, tables, metrics, curves
 ├── tests/
 ├── pyproject.toml
 └── README.md
@@ -39,19 +37,13 @@ rl-eng/
                 └──────┬───────┘
                        ↓
                 ┌──────────────┐
-                │    infra     │
-                └──────┬───────┘
-                       ↓
-                ┌──────────────┐
-                │   rollout    │  ⭐ system heart
+                │   rollout    │  training loop + metrics
                 └──────┬───────┘
           ┌────────────┼────────────┐
           ↓            ↓            ↓
-        envs         models        data
-                       ↓
-                ┌──────────────┐
-                │  learners    │
-                └──────────────┘
+        envs       evaluation      learners
+          ↓            ↓
+        data         models
 ```
 
 ## 🚀 Quick Start
@@ -68,6 +60,7 @@ For example: Train a TD(0) agent for Tic-Tac-Toe. This will create a new directo
 ```bash
 python3 -m rl_eng.tic_tac_toe train --epochs 100000 --epsilon 0.75
 ```
+Training writes per-run outputs under `runs/<run_id>/`, including `config.yaml`, `state_values_*.json`, `metrics.csv`, `eval.csv`, and curve images.
 Run the automated test suite:
 ```bash
 python3 -m pytest tests
@@ -86,12 +79,19 @@ python3 scripts/promote_run_to_export.py --run_id <your_run_id>
 ```
 Artifacts will be stored in `artifacts/exports/<model_name>_vK/`.
 
+### 4. Plotting Learning Curves
+Generate separate training and evaluation plots from a saved run:
+```bash
+python3 scripts/plot_learning_curves.py --run_id <your_run_id>
+```
+This reads `runs/<run_id>/metrics.csv` and `runs/<run_id>/eval.csv` and writes `training_curves.png` and `evaluation_curves.png` back into the run directory.
+
 ## 📦 Distribution
 Package an exported run into a standalone macOS `.app` bundle:
 ```bash
 ./apps/tic_tac_toe/build_app.sh --run_id <run_id>
 ```
-Build outputs are written under `artifacts/apps/tic_tac_toe/`.
+Build outputs are written under `artifacts/apps/tic_tac_toe/`, while the app source lives under `apps/tic_tac_toe/`.
 
 ## 🛠 Engineering Standards
 *   **Linting/Formatting**: Managed via `ruff`.
