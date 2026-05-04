@@ -139,6 +139,9 @@ def main():
     train_parser.add_argument("--epochs", type=int, default=config.training.epochs, help="Number of training epochs")
     train_parser.add_argument("--step_size", type=float, default=config.training.step_size, help="Learning step size")
     train_parser.add_argument("--epsilon", type=float, default=config.training.epsilon, help="Exploration rate")
+    train_parser.add_argument("--log_every", type=int, default=config.training.log_every, help="Episodes per training metrics row")
+    train_parser.add_argument("--eval_every", type=int, default=config.training.eval_every, help="Episodes per baseline evaluation")
+    train_parser.add_argument("--eval_episodes", type=int, default=config.training.eval_episodes, help="Games per evaluation matchup")
     train_parser.add_argument("--seed", type=int, default=config.seed, help="Random seed for reproducibility")
     train_parser.add_argument("--win_reward", type=float, default=config.training.win_reward, help="Reward for winning")
     train_parser.add_argument("--loss_reward", type=float, default=config.training.loss_reward, help="Reward for losing")
@@ -156,6 +159,9 @@ def main():
         config.training.epochs = args.epochs
         config.training.step_size = args.step_size
         config.training.epsilon = args.epsilon
+        config.training.log_every = args.log_every
+        config.training.eval_every = args.eval_every
+        config.training.eval_episodes = args.eval_episodes
         config.training.win_reward = args.win_reward
         config.training.loss_reward = args.loss_reward
         config.training.tie_reward = args.tie_reward
@@ -176,6 +182,9 @@ def main():
             step_size=config.training.step_size,
             epsilon=config.training.epsilon,
             print_per_epochs=500,
+            log_every=config.training.log_every,
+            eval_every=config.training.eval_every,
+            eval_episodes=config.training.eval_episodes,
             seed=config.seed,
             run_dir=run_dir,
             win_reward=config.training.win_reward,

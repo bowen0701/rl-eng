@@ -13,6 +13,7 @@ dependencies = [
     "gymnasium",
     "numpy>=1.21.0",
     "PyYAML",
+    "matplotlib>=3.7.0",
 ]
 
 [tool.setuptools]

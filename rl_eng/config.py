@@ -8,6 +8,9 @@ class TrainingConfig:
     epochs: int = 100000
     step_size: float = 0.1
     epsilon: float = 0.01
+    log_every: int = 500
+    eval_every: int = 5000
+    eval_episodes: int = 200
     gamma: float = 1.0  # Discount factor
     win_reward: float = 1.0
     loss_reward: float = -1.0

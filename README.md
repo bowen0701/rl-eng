@@ -23,12 +23,10 @@ rl-eng/
 │       └── rollout.py          # sampling + execution orchestration
 ├── scripts/                    # ⭐ entrypoints (thin orchestration only)
 ├── experiments/                # configs (YAML / Hydra style)
+├── apps/                       # checked-in app launchers and packaging scripts
 ├── artifacts/
-│   ├── checkpoints/
 │   ├── exports/
-│   ├── eval_reports/
-│   ├── traces/
-│   └── apps/
+│   └── apps/                   # generated app bundles and build outputs
 ├── tests/
 ├── pyproject.toml
 └── README.md
@@ -78,7 +76,7 @@ python3 -m pytest tests
 ### 2. Playing (Experimental)
 Launch the Pygame interface using a `run_id` from your local `runs/` folder:
 ```bash
-python3 artifacts/apps/tic_tac_toe/launcher.py --run_id <your_run_id>
+python3 apps/tic_tac_toe/launcher.py --run_id <your_run_id>
 ```
 
 ### 3. Promoting to Exports
@@ -91,7 +89,7 @@ Artifacts will be stored in `artifacts/exports/<model_name>_vK/`.
 ## 📦 Distribution
 Package an exported run into a standalone macOS `.app` bundle:
 ```bash
-./artifacts/apps/tic_tac_toe/build_app.sh --run_id <run_id>
+./apps/tic_tac_toe/build_app.sh --run_id <run_id>
 ```
 Build outputs are written under `artifacts/apps/tic_tac_toe/`.
 
