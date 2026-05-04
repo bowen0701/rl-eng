@@ -102,8 +102,9 @@ def self_train(
     episodes_since_last_log = 0
 
     if run_dir:
-        _initialize_csv(os.path.join(run_dir, "metrics.csv"), TRAIN_METRICS_FIELDNAMES)
-        _initialize_csv(os.path.join(run_dir, "eval.csv"), EVAL_FIELDNAMES)
+        os.makedirs(os.path.join(run_dir, "checkpoints"), exist_ok=True)
+        _initialize_csv(os.path.join(run_dir, "train_metrics.csv"), TRAIN_METRICS_FIELDNAMES)
+        _initialize_csv(os.path.join(run_dir, "eval_metrics.csv"), EVAL_FIELDNAMES)
 
     for epoch in range(1, epochs + 1):
         env = Environment()
@@ -145,7 +146,7 @@ def self_train(
 
         if run_dir and (epoch % log_every == 0 or epoch == epochs):
             _append_csv_row(
-                os.path.join(run_dir, "metrics.csv"),
+                os.path.join(run_dir, "train_metrics.csv"),
                 TRAIN_METRICS_FIELDNAMES,
                 _build_training_metrics_row(
                     episode=epoch,
@@ -163,11 +164,12 @@ def self_train(
             eval_rows = evaluate_against_baselines(agent1, agent2, eval_episodes=eval_episodes, episode=epoch)
             np.random.set_state(rng_state)
             for row in eval_rows:
-                _append_csv_row(os.path.join(run_dir, "eval.csv"), EVAL_FIELDNAMES, row)
+                _append_csv_row(os.path.join(run_dir, "eval_metrics.csv"), EVAL_FIELDNAMES, row)
 
     if run_dir:
-        agent1.save_state_value_table(run_dir)
-        agent2.save_state_value_table(run_dir)
+        checkpoint_dir = os.path.join(run_dir, "checkpoints")
+        agent1.save_state_value_table(checkpoint_dir)
+        agent2.save_state_value_table(checkpoint_dir)
 
     return metrics
 
