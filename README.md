@@ -11,6 +11,19 @@ The repository is organized around a small core package, run-local experiment ou
 rl-eng/
 ├── apps/                       # checked-in launcher / packaging scripts
 │   └── tic_tac_toe/
+├── experiments/                # experiment-local code, configs, and runtime artifacts
+│   └── <project>/              # e.g., 'tic_tac_toe'
+│       ├── config.yaml         # Top-level configuration for the project
+│       ├── train.py            # Script for training agents
+│       ├── eval.py             # Script for evaluating trained agents
+│       └── runs/               # Directory for individual run artifacts
+│           └── <run_id>        # e.g., f"{config.name}_{yyyymmdd}_{timestamp}_s{config.seed}_g{git_hash}"
+│               ├── config.yml
+│               ├── train_metrics.csv
+│               ├── eval_metrics.csv
+│               ├── train_curve.png
+│               ├── eval_curve.png
+│               └── checkpoints/
 ├── rl_eng/                     # core Python package
 │   ├── agents/
 │   ├── data/
@@ -18,13 +31,13 @@ rl-eng/
 │   ├── evaluation/
 │   ├── learners/
 │   ├── models/
-│   ├── rollout/
-│   └── tic_tac_toe.py          # training / play CLI
+│   └── rollout/
 ├── scripts/                    # utility scripts (promotion, plotting)
-├── artifacts/
-│   ├── exports/                # promoted model exports
-│   └── apps/                   # generated app bundles and build outputs
-├── runs/                       # run-local configs, tables, metrics, curves
+├── exports/                    # promoted model exports
+│   └── <project_v0.x>/         # e.g., 'tic_tac_toe_v0.1'
+│       ├── config.yaml
+│       ├── export_metadata.yaml
+│       └── checkpoints/
 ├── tests/
 ├── pyproject.toml
 └── README.md
@@ -33,7 +46,7 @@ rl-eng/
 ### Mental Model
 ```text
                 ┌──────────────┐
-                │   scripts    │
+                │ experiments  │
                 └──────┬───────┘
                        ↓
                 ┌──────────────┐
@@ -56,18 +69,18 @@ pip3 install -e .
 ```
 
 ### 1. Training & Testing
-For example: Train a TD(0) agent for Tic-Tac-Toe. This will create a new directory in `runs/`.
+For example: Train a TD(0) agent for Tic-Tac-Toe. This will create a new directory under `experiments/<project>/runs/`.
 ```bash
-python3 -m rl_eng.tic_tac_toe train --epochs 100000 --epsilon 0.75
+python3 -m experiments.<project>.train --epochs 100000 --epsilon 0.75
 ```
-Training writes per-run outputs under `runs/<run_id>/`, including `config.yaml`, `state_values_*.json`, `metrics.csv`, `eval.csv`, and curve images.
+Training writes per-run outputs under `experiments/tic_tac_toe/runs/<run_id>/`, including `config.yml`, `train_metrics.csv`, `eval_metrics.csv`, `train_curve.png`, `eval_curve.png`, and `checkpoints/`.
 Run the automated test suite:
 ```bash
 python3 -m pytest tests
 ```
 
 ### 2. Playing (Experimental)
-Launch the Pygame interface using a `run_id` from your local `runs/` folder:
+Launch the Pygame interface using a `run_id` from your local `experiments/<project>/runs/` folder:
 ```bash
 python3 apps/tic_tac_toe/launcher.py --run_id <your_run_id>
 ```
@@ -75,16 +88,16 @@ python3 apps/tic_tac_toe/launcher.py --run_id <your_run_id>
 ### 3. Promoting to Exports
 Once a run is ready for reuse, promote it into the exports bucket. This automates versioning and metadata generation:
 ```bash
-python3 scripts/promote_run_to_export.py --run_id <your_run_id>
+python3 scripts/promote_run_to_export.py --run_id <your_run_id> --version 0.1
 ```
-Artifacts will be stored in `artifacts/exports/<model_name>_vK/`.
+Artifacts will be stored in `exports/<project_v0.x>/`.
 
 ### 4. Plotting Learning Curves
 Generate separate training and evaluation plots from a saved run:
 ```bash
 python3 scripts/plot_learning_curves.py --run_id <your_run_id>
 ```
-This reads `runs/<run_id>/metrics.csv` and `runs/<run_id>/eval.csv` and writes `training_curves.png` and `evaluation_curves.png` back into the run directory.
+This reads `experiments/<project>/runs/<run_id>/train_metrics.csv` and `experiments/<project>/runs/<run_id>/eval_metrics.csv` and writes `train_curve.png` and `eval_curve.png` back into the run directory.
 
 ## 📦 Distribution
 Package an exported run into a standalone macOS `.app` bundle:

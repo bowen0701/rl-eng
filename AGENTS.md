@@ -1,21 +1,32 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-`rl_eng/` contains the core Python package, designed for scalability and future offline RL support:
+`rl_eng/` contains the core library, designed for scalability and future offline RL support:
 - `rl_eng/envs/`: Environment logic and interaction backends.
 - `rl_eng/agents/`: RL agent implementations (e.g., TD, PPO).
 - `rl_eng/rollout/`: Sampling and execution engine.
 - `rl_eng/data/`: Data primitives, trajectories, and datasets for online/offline RL.
 - `rl_eng/config.py`: Common configurations and type-safe experiment settings.
-- `rl_eng/tic_tac_toe.py`: Tic-Tac-Toe CLI entrypoint.
-- `rl_eng/multi_armed_bandits.py`: Bandit experiment entrypoint.
 
-Other key directories:
-- `apps/tic_tac_toe/`: Pygame launcher and macOS packaging scripts.
-- `notebooks/`: Interactive exploration and analysis.
-- `tests/`: Project tests mirroring the main package structure.
-- `runs/`: Runtime artifacts (configs, state-values).
-- `artifacts/`: Generated outputs such as promoted exports and packaged apps.
+`experiments/` contains experiment-local code, configs, and runtime artifacts:
+- `experiments/<project>/`:
+  - `config.yaml`: Top-level configuration for the project.
+  - `train.py`: Script for training agents.
+  - `eval.py`: Script for evaluating trained agents.
+  - `runs/`: Directory for individual run artifacts.
+    - `<run_id>` (e.g., `f"{config.name}_{yyyymmdd}_{timestamp}_s{config.seed}_g{git_hash}"`): Dynamically named run directories containing:
+      - `config.yml`: Run-specific configuration.
+      - `train_metrics.csv`: Metrics collected during training.
+      - `eval_metrics.csv`: Metrics collected during evaluation.
+      - `train_curve.png`: Visual representation of training progress.
+      - `eval_curve.png`: Visual representation of evaluation progress.
+      - `checkpoints/`: Saved model checkpoints.
+
+`exports/` contains exported models and associated metadata:
+- `exports/<project_v0.x>/`: Versioned export directories.
+  - `config.yaml`: Exported configuration.
+  - `export_metadata.yaml`: Metadata about the export.
+  - `checkpoints/`: Exported model checkpoints.
 
 ## Build, Test, and Development Commands
 Install locally with `pip3 install -e .`.
@@ -24,8 +35,8 @@ Install locally with `pip3 install -e .`.
 - `python3 -m ruff check .` validates lint rules; use `python3 -m ruff check . --fix` for safe auto-fixes.
 - `python3 -m ruff format .` applies the repository formatter.
 - `python3 -m mypy rl_eng tests` runs static type checks used by pre-commit.
-- `python3 -m rl_eng.tic_tac_toe train --epochs 100000 --epsilon 0.75` trains a Tic-Tac-Toe agent and writes a run under `runs/`.
-- `python3 scripts/promote_run_to_export.py --run_id <run_id>` promotes a finished run into `artifacts/exports/`.
+- `python3 -m experiments.tic_tac_toe.train --epochs 100000 --epsilon 0.75` trains a Tic-Tac-Toe agent and writes a run under `experiments/tic_tac_toe/runs/`.
+- `python3 scripts/promote_run_to_export.py --run_id <run_id>` promotes a finished run into `exports/`.
 - `python3 apps/tic_tac_toe/launcher.py --run_id <run_id>` launches the GUI for a saved run.
 
 ## Coding Style & Naming Conventions
