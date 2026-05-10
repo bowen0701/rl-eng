@@ -6,8 +6,8 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import numpy as np
 
-from rl_eng.agents.tic_tac_toe_td import Agent
-from rl_eng.envs.tic_tac_toe import BOARD_NCOLS, BOARD_NROWS, CIRCLE, CROSS, EMPTY, Environment
+from projects.tic_tac_toe.agent import Agent
+from projects.tic_tac_toe.env import BOARD_NCOLS, BOARD_NROWS, CIRCLE, CROSS, EMPTY, Environment
 
 
 class RandomPolicy:

@@ -1,8 +1,8 @@
 import pygame
 import sys
 import os
-from rl_eng.envs.tic_tac_toe import Environment, CROSS, CIRCLE, EMPTY
-from rl_eng.agents.tic_tac_toe_tabular import Agent
+from projects.tic_tac_toe.env import Environment, CROSS, CIRCLE, EMPTY
+from projects.tic_tac_toe.agent import Agent
 
 # Constants
 WIDTH, HEIGHT = 400, 500 # Extra height for buttons/status

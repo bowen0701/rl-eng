@@ -11,9 +11,9 @@ from typing import Tuple
 import yaml
 
 from rl_eng.config import BaseConfig
-from rl_eng.envs.tic_tac_toe import CROSS, CIRCLE, EMPTY, NMARKS, BOARD_NROWS, BOARD_NCOLS, BOARD_SIZE, Environment
-from rl_eng.envs.tic_tac_toe.utils import show_board
-from rl_eng.agents.tic_tac_toe_td import Agent
+from projects.tic_tac_toe.env import CROSS, CIRCLE, EMPTY, NMARKS, BOARD_NROWS, BOARD_NCOLS, BOARD_SIZE, Environment
+from projects.tic_tac_toe.env.utils import show_board
+from projects.tic_tac_toe.agent import Agent
 
 @dataclass
 class TicTacToeConfig(BaseConfig):
@@ -108,7 +108,7 @@ def main():
     """Main entry point for Tic-Tac-Toe RL evaluation and play.
 
     Usage:
-        python3 -m experiments.tic_tac_toe.eval play --run_id <run_id>
+        python3 -m projects.tic_tac_toe.eval play --run_id <run_id>
     """
     parser = argparse.ArgumentParser(description="Tic-Tac-Toe Reinforcement Learning Evaluation/Play")
     subparsers = parser.add_subparsers(dest="cmd", help="Command to run")
@@ -117,7 +117,7 @@ def main():
 
     args = parser.parse_args()
 
-    run_dir = os.path.join("experiments", "tic_tac_toe", "runs", args.run_id)
+    run_dir = os.path.join("projects", "tic_tac_toe", "runs", args.run_id)
     if not os.path.exists(run_dir):
         print(f"Error: Run directory {run_dir} does not exist.")
         return

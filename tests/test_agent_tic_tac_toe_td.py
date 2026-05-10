@@ -3,9 +3,9 @@ Usage:
     python3 -m pytest tests/test_agent_tic_tac_toe_td.py
     python3 -m pytest tests
 """
-from rl_eng.agents.tic_tac_toe_td import Agent
+from projects.tic_tac_toe.agent import Agent
 from rl_eng.data import Trajectory
-from rl_eng.envs.tic_tac_toe import CROSS, CIRCLE
+from projects.tic_tac_toe.env import CROSS, CIRCLE
 
 def test_agent_init():
     agent_x = Agent(player='X')

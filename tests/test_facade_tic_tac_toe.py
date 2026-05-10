@@ -3,7 +3,7 @@ Usage:
     python3 -m pytest tests/test_facade_tic_tac_toe.py
     python3 -m pytest tests
 """
-import experiments.tic_tac_toe as tic_tac_toe
+import projects.tic_tac_toe as tic_tac_toe
 
 def test_facade_constants():
     """Verify that board constants are still accessible via the facade."""

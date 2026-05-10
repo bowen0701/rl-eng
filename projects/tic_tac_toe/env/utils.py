@@ -1,7 +1,7 @@
 """Utilities for Tic-Tac-Toe environment."""
 
 from typing import Dict, List
-from rl_eng.envs.tic_tac_toe.env import BOARD_NCOLS, BOARD_NROWS, CROSS, EMPTY, Environment
+from projects.tic_tac_toe.env.env import BOARD_NCOLS, BOARD_NROWS, CROSS, EMPTY, Environment
 
 
 def show_board(env: Environment) -> None:

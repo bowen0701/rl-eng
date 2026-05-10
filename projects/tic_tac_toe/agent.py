@@ -4,12 +4,12 @@ import numpy as np
 from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 from rl_eng.data import Trajectory
-from rl_eng.envs.tic_tac_toe import CROSS, CIRCLE, Environment
-from rl_eng.envs.tic_tac_toe.utils import get_all_states
+from projects.tic_tac_toe.env import CROSS, CIRCLE, Environment
+from projects.tic_tac_toe.env.utils import get_all_states
 from rl_eng.models.state_value_table import StateValueTable
 
 if TYPE_CHECKING:
-    from rl_eng.rollout.tic_tac_toe import SelfPlayMetrics
+    from projects.tic_tac_toe.rollout import SelfPlayMetrics
 
 # TODO: Refactor Agent to Actor / Rollout (interacts with env).
 # rl_eng/rollout/
@@ -54,7 +54,7 @@ class Agent:
 
     def init_state_value_table(self) -> None:
         """Init state-value table."""
-        from rl_eng.envs.tic_tac_toe.utils import get_all_states
+        from projects.tic_tac_toe.env.utils import get_all_states
         all_state_env_d: Dict[str, Environment] = get_all_states()
 
         for s, env in all_state_env_d.items():
@@ -172,7 +172,7 @@ def self_train(
     tie_reward: float = 0.5,
 ) -> "SelfPlayMetrics":
     """Compatibility wrapper for the rollout-owned self-play loop."""
-    from rl_eng.rollout.tic_tac_toe import self_train as rollout_self_train
+    from projects.tic_tac_toe.rollout import self_train as rollout_self_train
 
     return rollout_self_train(
         epochs=epochs,

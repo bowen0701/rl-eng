@@ -22,7 +22,7 @@ from datetime import datetime
 import yaml # Ensure yaml is imported for dumping
 
 EXPORTS_DIR = "exports" # Changed from "artifacts/exports"
-EXPERIMENTS_DIR = "experiments"
+EXPERIMENTS_DIR = "projects"
 
 def find_run_path(run_id: str) -> str:
     """Finds the full path to a run directory by searching within experiments/."""

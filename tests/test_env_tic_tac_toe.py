@@ -3,7 +3,7 @@ Usage:
     python3 -m pytest tests/test_env_tic_tac_toe.py
     python3 -m pytest tests
 """
-from rl_eng.envs.tic_tac_toe import Environment, CROSS, CIRCLE, EMPTY
+from projects.tic_tac_toe.env import Environment, CROSS, CIRCLE, EMPTY
 
 def test_initial_state():
     env = Environment()

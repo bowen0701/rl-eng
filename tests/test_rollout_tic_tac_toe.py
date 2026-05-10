@@ -6,9 +6,9 @@ Usage:
 
 import csv
 
-from rl_eng.agents.tic_tac_toe_td import self_train as agent_self_train
+from projects.tic_tac_toe.agent import self_train as agent_self_train
 from rl_eng.data import Trajectory
-from rl_eng.rollout.tic_tac_toe import SelfPlayMetrics, self_train
+from projects.tic_tac_toe.rollout import SelfPlayMetrics, self_train
 
 
 def test_rollout_self_train_returns_metrics():

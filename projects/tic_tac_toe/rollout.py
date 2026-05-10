@@ -9,9 +9,9 @@ from typing import Any, Dict, Iterable, Optional
 
 import numpy as np
 
-from rl_eng.agents.tic_tac_toe_td import Agent
-from rl_eng.evaluation import evaluate_against_baselines
-from rl_eng.envs.tic_tac_toe import Environment, CROSS, CIRCLE, show_board
+from projects.tic_tac_toe.agent import Agent
+from projects.tic_tac_toe.evaluation import evaluate_against_baselines
+from projects.tic_tac_toe.env import Environment, CROSS, CIRCLE, show_board
 from rl_eng.learners.td_learner import TDLearner
 
 

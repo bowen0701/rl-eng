@@ -19,7 +19,7 @@ class TrainingConfig:
 
 @dataclass
 class BaseConfig:
-    """Base configuration for RL experiments."""
+    """Base configuration for RL projects."""
     env: str
     seed: int = 42
     training: TrainingConfig = field(default_factory=TrainingConfig)

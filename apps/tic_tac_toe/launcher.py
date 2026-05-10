@@ -123,12 +123,12 @@ def find_run_dir(run_id: str) -> str:
     Find the run directory within the experiments structure.
     """
     # Check current experiments/tic_tac_toe/runs/
-    path = resource_path(os.path.join("experiments", "tic_tac_toe", "runs", run_id))
+    path = resource_path(os.path.join("projects", "tic_tac_toe", "runs", run_id))
     if os.path.isdir(path):
         return path
-    
+
     # Fallback/Generic search if needed
-    experiments_base = resource_path("experiments")
+    experiments_base = resource_path("projects")
     if os.path.exists(experiments_base):
         for exp in os.listdir(experiments_base):
             path = os.path.join(experiments_base, exp, "runs", run_id)
@@ -166,7 +166,7 @@ def main() -> None:
         print(
             f"[launcher] Error: run directory not found for run_id: {args.run_id}\n"
             f"  Make sure you built the app with --add-data pointing to "
-            f"experiments/tic_tac_toe/runs/{args.run_id}, or that the directory exists in the "
+            f"projects/tic_tac_toe/runs/{args.run_id}, or that the directory exists in the "
             f"current working directory when running in development mode.",
             file=sys.stderr,
         )

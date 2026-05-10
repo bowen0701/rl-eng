@@ -14,10 +14,10 @@ import numpy as np
 import yaml
 
 from rl_eng.config import BaseConfig
-from rl_eng.envs.tic_tac_toe import CROSS, CIRCLE, EMPTY, NMARKS, BOARD_NROWS, BOARD_NCOLS, BOARD_SIZE, Environment
-from rl_eng.envs.tic_tac_toe.utils import show_board
-from rl_eng.agents.tic_tac_toe_td import Agent
-from rl_eng.rollout.tic_tac_toe import self_train
+from projects.tic_tac_toe.env import CROSS, CIRCLE, EMPTY, NMARKS, BOARD_NROWS, BOARD_NCOLS, BOARD_SIZE, Environment
+from projects.tic_tac_toe.env.utils import show_board
+from projects.tic_tac_toe.agent import Agent
+from projects.tic_tac_toe.rollout import self_train
 
 @dataclass
 class TicTacToeConfig(BaseConfig):
@@ -29,7 +29,7 @@ def main():
     """Main entry point for Tic-Tac-Toe RL training.
     
     Usage:
-        python3 -m experiments.tic_tac_toe.train --epochs 100000 --step_size 0.75 --epsilon 0.75 --seed 42
+        python3 -m projects.tic_tac_toe.train --epochs 100000 --step_size 0.75 --epsilon 0.75 --seed 42
     """
     # Configuration lifecycle: 
     # 1. Initialize default config object to use for argparse defaults
