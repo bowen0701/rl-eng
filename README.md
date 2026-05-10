@@ -66,55 +66,62 @@ rl-eng/
 ## 🚀 Quick Start
 
 ### Installation
+
+**Remote server** (conda base env is active by default):
 ```bash
-# Clone and install dependencies
-git clone https://github.com/bowenlee/rl-eng.git
-cd rl-eng
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip setuptools wheel
-python -m pip install -e .
-python -m pip install pytest
-```
+git clone https://github.com/bowenlee/rl-eng.git && cd rl-eng && make install
 ```
 
-### 1. Training & Testing
-For example: Train a TD(0) agent for Tic-Tac-Toe. This will create a new directory under `projects/<project>/runs/`.
+**Local development** (activate a venv or conda env first):
 ```bash
-python3 -m projects.<project>.train --epochs 100000 --epsilon 0.75
-```
-Training writes per-run outputs under `projects/tic_tac_toe/runs/<run_id>/`, including `config.yml`, `train_metrics.csv`, `eval_metrics.csv`, `train_curve.png`, `eval_curve.png`, and `checkpoints/`.
-Run the automated test suite:
-```bash
-python3 -m pytest tests
+git clone https://github.com/bowenlee/rl-eng.git && cd rl-eng
+python3 -m venv .venv && source .venv/bin/activate
+make install
 ```
 
-### 2. Playing (Experimental)
-Launch the Pygame interface using a `run_id` from your local `projects/<project>/runs/` folder:
+### Developer Workflow
+
+| Target           | Description                         |
+|------------------|-------------------------------------|
+| `make install`   | Install package in editable mode    |
+| `make test`      | Run test suite                      |
+| `make lint`      | Lint and auto-fix with ruff         |
+| `make format`    | Format with ruff                    |
+| `make typecheck` | Type-check core library with mypy   |
+
+### 1. Train
+Each project exposes a `train.py` entry point. Run it as a module from the repo root:
 ```bash
-python3 apps/tic_tac_toe/launcher.py --run_id <your_run_id>
+python3 -m projects.<project>.train [--epochs N] [--step_size LR] [--epsilon E] [--seed S]
+```
+Outputs are written to `projects/<project>/runs/<run_id>/` and include `config.yml`, `train_metrics.csv`, `eval_metrics.csv`, and `checkpoints/`.
+
+### 2. Evaluate / Play
+Each project exposes an `eval.py` entry point. Load a trained run and play:
+```bash
+python3 -m projects.<project>.eval play --run_id <run_id>
 ```
 
-### 3. Promoting to Exports
-Once a run is ready for reuse, promote it into the exports bucket. This automates versioning and metadata generation:
+### 3. Plot Learning Curves
+Generate training and evaluation plots from any saved run:
 ```bash
-python3 scripts/promote_run_to_export.py --run_id <your_run_id> --version 0.1
+python3 scripts/plot_learning_curves.py --run_id <run_id>
 ```
-Artifacts will be stored in `exports/<project_v0.x>/`.
+Writes `train_curve.png` and `eval_curve.png` into `projects/<project>/runs/<run_id>/`.
 
-### 4. Plotting Learning Curves
-Generate separate training and evaluation plots from a saved run:
+### 4. Promote to Exports
+Promote a finished run into the versioned exports bucket:
 ```bash
-python3 scripts/plot_learning_curves.py --run_id <your_run_id>
+python3 scripts/promote_run_to_export.py --run_id <run_id> [--version 0.1]
 ```
-This reads `projects/<project>/runs/<run_id>/train_metrics.csv` and `projects/<project>/runs/<run_id>/eval_metrics.csv` and writes `train_curve.png` and `eval_curve.png` back into the run directory.
+Artifacts are stored under `exports/<project>_v<X.Y>/`.
 
 ## 📦 Distribution
-Package an exported run into a standalone macOS `.app` bundle:
+Package an exported run into a standalone macOS `.app` bundle (per project):
 ```bash
-./apps/tic_tac_toe/build_app.sh --run_id <run_id>
+./apps/<project>/build_app.sh --run_id <run_id>
 ```
-Build outputs are written under `artifacts/apps/tic_tac_toe/`, while the app source lives under `apps/tic_tac_toe/`.
+Build outputs are written under `artifacts/apps/<project>/`, while the app source lives under `apps/<project>/`.
 
 ## 🛠 Engineering Standards
 *   **Linting/Formatting**: Managed via `ruff`.
