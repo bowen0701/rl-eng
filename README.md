@@ -5,33 +5,36 @@
 ---
 
 ## 🏗 Project Architecture
-The repository is organized around a small core package, run-local experiment outputs, and a thin set of scripts and app launchers:
+The repository is organized around a small generic core package (`rl_eng/`), per-project code and artifacts (`projects/`), and a thin set of scripts and app launchers:
 
 ```text
 rl-eng/
 ├── apps/                       # checked-in launcher / packaging scripts
 │   └── tic_tac_toe/
-├── experiments/                # experiment-local code, configs, and runtime artifacts
+├── projects/                   # one directory per RL project
 │   └── <project>/              # e.g., 'tic_tac_toe'
-│       ├── config.yaml         # Top-level configuration for the project
-│       ├── train.py            # Script for training agents
-│       ├── eval.py             # Script for evaluating trained agents
-│       └── runs/               # Directory for individual run artifacts
-│           └── <run_id>        # e.g., f"{config.name}_{yyyymmdd}_{timestamp}_s{config.seed}_g{git_hash}"
+│       ├── env/                # project-specific environment
+│       ├── agent.py            # project-specific agent
+│       ├── evaluation.py       # project-specific evaluation helpers
+│       ├── rollout.py          # project-specific training loop
+│       ├── config.yaml         # default hyperparameters
+│       ├── train.py            # training entry point
+│       ├── eval.py             # evaluation / play entry point
+│       ├── notebooks/          # project-specific notebooks
+│       └── runs/               # runtime artifacts (not committed)
+│           └── <run_id>        # e.g., f"{env}_{yyyymmdd}_{hhmm}_s{seed}_g{git_hash}"
 │               ├── config.yml
 │               ├── train_metrics.csv
 │               ├── eval_metrics.csv
 │               ├── train_curve.png
 │               ├── eval_curve.png
 │               └── checkpoints/
-├── rl_eng/                     # core Python package
-│   ├── agents/
-│   ├── data/
-│   ├── envs/
-│   ├── evaluation/
-│   ├── learners/
-│   ├── models/
-│   └── rollout/
+├── rl_eng/                     # generic core library (interfaces + algorithms)
+│   ├── interfaces/             # abstract base classes (Env, Learner, Model, Rollout)
+│   ├── data/                   # Trajectory
+│   ├── learners/               # TDLearner and future generic learners
+│   ├── models/                 # StateValueTable and future generic models
+│   └── config.py               # BaseConfig / TrainingConfig dataclasses
 ├── scripts/                    # utility scripts (promotion, plotting)
 ├── exports/                    # promoted model exports
 │   └── <project_v0.x>/         # e.g., 'tic_tac_toe_v0.1'
@@ -46,7 +49,7 @@ rl-eng/
 ### Mental Model
 ```text
                 ┌──────────────┐
-                │ experiments  │
+                │   projects   │
                 └──────┬───────┘
                        ↓
                 ┌──────────────┐
@@ -54,9 +57,10 @@ rl-eng/
                 └──────┬───────┘
           ┌────────────┼────────────┐
           ↓            ↓            ↓
-        envs       evaluation      learners
+        env        evaluation      rl_eng/learners
           ↓            ↓
-        data         models
+        rl_eng/    rl_eng/models
+        data
 ```
 
 ## 🚀 Quick Start
@@ -75,18 +79,18 @@ python -m pip install pytest
 ```
 
 ### 1. Training & Testing
-For example: Train a TD(0) agent for Tic-Tac-Toe. This will create a new directory under `experiments/<project>/runs/`.
+For example: Train a TD(0) agent for Tic-Tac-Toe. This will create a new directory under `projects/<project>/runs/`.
 ```bash
-python3 -m experiments.<project>.train --epochs 100000 --epsilon 0.75
+python3 -m projects.<project>.train --epochs 100000 --epsilon 0.75
 ```
-Training writes per-run outputs under `experiments/tic_tac_toe/runs/<run_id>/`, including `config.yml`, `train_metrics.csv`, `eval_metrics.csv`, `train_curve.png`, `eval_curve.png`, and `checkpoints/`.
+Training writes per-run outputs under `projects/tic_tac_toe/runs/<run_id>/`, including `config.yml`, `train_metrics.csv`, `eval_metrics.csv`, `train_curve.png`, `eval_curve.png`, and `checkpoints/`.
 Run the automated test suite:
 ```bash
 python3 -m pytest tests
 ```
 
 ### 2. Playing (Experimental)
-Launch the Pygame interface using a `run_id` from your local `experiments/<project>/runs/` folder:
+Launch the Pygame interface using a `run_id` from your local `projects/<project>/runs/` folder:
 ```bash
 python3 apps/tic_tac_toe/launcher.py --run_id <your_run_id>
 ```
@@ -103,7 +107,7 @@ Generate separate training and evaluation plots from a saved run:
 ```bash
 python3 scripts/plot_learning_curves.py --run_id <your_run_id>
 ```
-This reads `experiments/<project>/runs/<run_id>/train_metrics.csv` and `experiments/<project>/runs/<run_id>/eval_metrics.csv` and writes `train_curve.png` and `eval_curve.png` back into the run directory.
+This reads `projects/<project>/runs/<run_id>/train_metrics.csv` and `projects/<project>/runs/<run_id>/eval_metrics.csv` and writes `train_curve.png` and `eval_curve.png` back into the run directory.
 
 ## 📦 Distribution
 Package an exported run into a standalone macOS `.app` bundle:

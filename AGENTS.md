@@ -1,20 +1,25 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-`rl_eng/` contains the core library, designed for scalability and future offline RL support:
-- `rl_eng/envs/`: Environment logic and interaction backends.
-- `rl_eng/agents/`: RL agent implementations (e.g., TD, PPO).
-- `rl_eng/rollout/`: Sampling and execution engine.
+`rl_eng/` contains the generic core library:
+- `rl_eng/interfaces/`: Abstract base classes (Env, Learner, Model, Rollout).
 - `rl_eng/data/`: Data primitives, trajectories, and datasets for online/offline RL.
-- `rl_eng/config.py`: Common configurations and type-safe experiment settings.
+- `rl_eng/learners/`: Generic learner implementations (e.g., TDLearner).
+- `rl_eng/models/`: Generic model implementations (e.g., StateValueTable).
+- `rl_eng/config.py`: BaseConfig / TrainingConfig dataclasses.
 
-`experiments/` contains experiment-local code, configs, and runtime artifacts:
-- `experiments/<project>/`:
+`projects/` contains one directory per RL project with all project-specific code and artifacts:
+- `projects/<project>/`:
+  - `env/`: Project-specific environment.
+  - `agent.py`: Project-specific agent.
+  - `evaluation.py`: Project-specific evaluation helpers.
+  - `rollout.py`: Project-specific training loop.
   - `config.yaml`: Top-level configuration for the project.
   - `train.py`: Script for training agents.
   - `eval.py`: Script for evaluating trained agents.
-  - `runs/`: Directory for individual run artifacts.
-    - `<run_id>` (e.g., `f"{config.name}_{yyyymmdd}_{timestamp}_s{config.seed}_g{git_hash}"`): Dynamically named run directories containing:
+  - `notebooks/`: Project-specific notebooks.
+  - `runs/`: Directory for individual run artifacts (not committed).
+    - `<run_id>` (e.g., `f"{env}_{yyyymmdd}_{hhmm}_s{seed}_g{git_hash}"`): Dynamically named run directories containing:
       - `config.yml`: Run-specific configuration.
       - `train_metrics.csv`: Metrics collected during training.
       - `eval_metrics.csv`: Metrics collected during evaluation.
@@ -35,7 +40,7 @@ Install locally with `pip3 install -e .`.
 - `python3 -m ruff check .` validates lint rules; use `python3 -m ruff check . --fix` for safe auto-fixes.
 - `python3 -m ruff format .` applies the repository formatter.
 - `python3 -m mypy rl_eng tests` runs static type checks used by pre-commit.
-- `python3 -m experiments.tic_tac_toe.train --epochs 100000 --epsilon 0.75` trains a Tic-Tac-Toe agent and writes a run under `experiments/tic_tac_toe/runs/`.
+- `python3 -m projects.tic_tac_toe.train --epochs 100000 --epsilon 0.75` trains a Tic-Tac-Toe agent and writes a run under `projects/tic_tac_toe/runs/`.
 - `python3 scripts/promote_run_to_export.py --run_id <run_id>` promotes a finished run into `exports/`.
 - `python3 apps/tic_tac_toe/launcher.py --run_id <run_id>` launches the GUI for a saved run.
 
